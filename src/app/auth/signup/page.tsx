@@ -58,7 +58,7 @@ export default function SignupPage() {
               </div>
               <h1 className="text-2xl font-semibold text-gray-800 mb-4">Welcome to neocare!</h1>
               <p className="text-gray-600 mb-2">
-                We've sent a setup link to <span className="font-medium">{formData.email}</span>
+                We&apos;tve sent a setup link to <span className="font-medium">{formData.email}</span>
               </p>
               <p className="text-sm text-gray-500">
                 Click the link in your email to complete your account setup. The link will expire in 10 minutes.
@@ -88,7 +88,7 @@ export default function SignupPage() {
               <div className="flex items-start space-x-3">
                 <Mail className="w-5 h-5 text-gray-500 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-sm font-medium text-gray-800 mb-1">Didn't receive the email?</p>
+                  <p className="text-sm font-medium text-gray-800 mb-1">Didn&apos;tt receive the email?</p>
                   <p className="text-xs text-gray-600">
                     Check your spam folder or wait a few minutes before requesting a new link.
                   </p>
