@@ -75,7 +75,7 @@ export default function DashboardPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             Welcome back, {user?.displayName?.split(" ")[0] || "there"}!
           </h2>
-          <p className="text-gray-600">Here's what's happening with your care coordination today.</p>
+          <p className="text-gray-600">Here&apos;s what&apos;s happening with your care coordination today.</p>
         </div>
 
         {/* Stats Grid */}

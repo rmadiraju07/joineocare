@@ -27,7 +27,7 @@ export default function OnboardingPage() {
 
     try {
       // You can save additional profile data to your database here
-      // For now, we'll just complete onboarding
+      // For now, we&apos;ll just complete onboarding
 
       // Optional: Update user profile with additional info
       if (auth.currentUser) {
@@ -50,11 +50,11 @@ export default function OnboardingPage() {
       <form onSubmit={handleSubmit} className="w-full max-w-md space-y-6">
         <div className="text-center">
           <h1 className="text-2xl font-bold">Welcome to EoCare</h1>
-          <p className="text-sm text-gray-500 mt-2">Let's get you set up with a few quick details.</p>
+          <p className="text-sm text-gray-500 mt-2">Let&apos;s get you set up with a few quick details.</p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">What's your role?</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">What&apos;s your role?</label>
           <div className="relative">
             <select
               name="role"
