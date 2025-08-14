@@ -48,7 +48,7 @@ export default function AuthPage() {
               </div>
               <h1 className="text-2xl font-semibold text-gray-800 mb-4">Magic link sent!</h1>
               <p className="text-gray-600 mb-2">
-                We've sent a login link to <span className="font-medium">{email}</span>
+                We&apos;tve sent a login link to <span className="font-medium">{email}</span>
               </p>
               <p className="text-sm text-gray-500">
                 Click the link in your email to sign in. The link will expire in 10 minutes.
@@ -78,7 +78,7 @@ export default function AuthPage() {
               <div className="flex items-start space-x-3">
                 <Mail className="w-5 h-5 text-gray-500 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-sm font-medium text-gray-800 mb-1">Didn't receive the email?</p>
+                  <p className="text-sm font-medium text-gray-800 mb-1">Didn&apos;tt receive the email?</p>
                   <p className="text-xs text-gray-600">
                     Check your spam folder or wait a few minutes before requesting a new link.
                   </p>
@@ -125,7 +125,7 @@ export default function AuthPage() {
                 <h1 className="text-2xl font-bold text-gray-900">neocare</h1>
               </div>
               <h2 className="text-xl font-semibold text-gray-800 mb-2">Sign in to your account</h2>
-              <p className="text-gray-600 text-sm">We'll send you a magic link to sign in instantly</p>
+              <p className="text-gray-600 text-sm">We&apos;tll send you a magic link to sign in instantly</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -182,7 +182,7 @@ export default function AuthPage() {
 
           {/* Switch to signup */}
           <div className="text-center text-sm text-gray-600 mt-6">
-            Don't have an account?{" "}
+            Don&apos;tt have an account?{" "}
             <Link href="/auth/signup" className="font-medium text-black hover:text-gray-800 transition-colors">
               Sign up
             </Link>
