@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { sendSignInLinkToEmail } from "firebase/auth"
@@ -19,7 +21,10 @@ export default function AuthPage() {
 
     try {
       const actionCodeSettings = {
-        url: "https://joineocare.vercel.app/auth/confirm",
+        url:
+          process.env.NODE_ENV === "development"
+            ? `${window.location.origin}/auth/confirm`
+            : "https://joineocare.vercel.app/auth/confirm",
         handleCodeInApp: true,
       }
 
@@ -28,7 +33,8 @@ export default function AuthPage() {
       setIsEmailSent(true)
     } catch (err) {
       console.error("Error sending magic link:", err)
-      alert("Could not send login link. Try again.")
+      const errorMessage = err instanceof Error ? err.message : "Could not send login link. Try again."
+      alert(errorMessage)
     } finally {
       setIsLoading(false)
     }
@@ -92,7 +98,7 @@ export default function AuthPage() {
         </button>
 
         <p className="text-center text-sm text-gray-500">
-          Don’t have an account?{" "}
+          Don't have an account?{" "}
           <Link href="/auth/signup" className="text-black underline">
             Sign up
           </Link>

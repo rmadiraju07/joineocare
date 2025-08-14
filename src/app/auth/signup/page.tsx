@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { sendSignInLinkToEmail } from "firebase/auth"
@@ -14,7 +16,7 @@ export default function SignupPage() {
   const router = useRouter()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,16 +25,21 @@ export default function SignupPage() {
 
     try {
       const actionCodeSettings = {
-        url: "https://joineocare.vercel.app/auth/confirm",
+        url:
+          process.env.NODE_ENV === "development"
+            ? `${window.location.origin}/auth/confirm`
+            : "https://joineocare.vercel.app/auth/confirm",
         handleCodeInApp: true,
       }
 
       await sendSignInLinkToEmail(auth, formData.email, actionCodeSettings)
       window.localStorage.setItem("emailForSignIn", formData.email)
+      window.localStorage.setItem("signupName", formData.name)
       setIsEmailSent(true)
     } catch (err) {
       console.error("Error sending signup link:", err)
-      alert("Could not send signup link. Try again.")
+      const errorMessage = err instanceof Error ? err.message : "Could not send signup link. Try again."
+      alert(errorMessage)
     } finally {
       setIsLoading(false)
     }

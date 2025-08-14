@@ -3,12 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { auth } from "@/lib/firebase"
-import {
-  isSignInWithEmailLink,
-  signInWithEmailLink,
-  updateProfile,
-  getAdditionalUserInfo,
-} from "firebase/auth"
+import { isSignInWithEmailLink, signInWithEmailLink, updateProfile, getAdditionalUserInfo } from "firebase/auth"
 
 export default function ConfirmPage() {
   const router = useRouter()
@@ -66,9 +61,7 @@ export default function ConfirmPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <p className="text-gray-700 text-lg">
-        {isProcessing ? "Signing you in..." : "Redirecting..."}
-      </p>
+      <p className="text-gray-700 text-lg">{isProcessing ? "Signing you in..." : "Redirecting..."}</p>
     </div>
   )
 }
