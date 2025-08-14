@@ -1,33 +1,63 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { signInWithEmailLink } from "firebase/auth"
 import { auth } from "@/lib/firebase"
+import {
+  isSignInWithEmailLink,
+  signInWithEmailLink,
+  updateProfile,
+  getAdditionalUserInfo,
+} from "firebase/auth"
 
 export default function ConfirmPage() {
   const router = useRouter()
+  const [email, setEmail] = useState("")
+  const [isProcessing, setIsProcessing] = useState(true)
 
   useEffect(() => {
     const completeSignIn = async () => {
-      const email = window.localStorage.getItem("emailForSignIn")
-
-      if (!email) {
-        alert("No email found. Please try signing in again.")
-        router.push("/auth")
-        return
-      }
-
       try {
-        await signInWithEmailLink(auth, email, window.location.href)
+        const storedEmail = window.localStorage.getItem("emailForSignIn")
+        const storedName = window.localStorage.getItem("signupName")
+
+        // Fallback to prompt if email isn't stored
+        const emailToUse = storedEmail || window.prompt("Please enter your email to complete sign-in:")
+
+        if (!emailToUse) {
+          alert("Email is required to sign in.")
+          router.push("/auth")
+          return
+        }
+
+        if (!isSignInWithEmailLink(auth, window.location.href)) {
+          alert("Invalid or expired sign-in link.")
+          router.push("/auth")
+          return
+        }
+
+        const result = await signInWithEmailLink(auth, emailToUse, window.location.href)
         window.localStorage.removeItem("emailForSignIn")
 
-        // Optional: fetch user profile from DB or redirect
-        router.push("/dashboard")
+        // If it's a signup, optionally update user profile with display name
+        if (storedName && auth.currentUser) {
+          await updateProfile(auth.currentUser, { displayName: storedName })
+          window.localStorage.removeItem("signupName")
+        }
+
+        // Check if this is a new user
+        const userInfo = getAdditionalUserInfo(result)
+        if (userInfo?.isNewUser) {
+          router.push("/onboarding") // change to your real onboarding route
+        } else {
+          router.push("/dashboard")
+        }
       } catch (error) {
         console.error("Error confirming sign-in:", error)
         alert("Link invalid or expired. Try again.")
         router.push("/auth")
+      } finally {
+        setIsProcessing(false)
       }
     }
 
@@ -36,7 +66,9 @@ export default function ConfirmPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <p className="text-gray-700 text-lg">Signing you in...</p>
+      <p className="text-gray-700 text-lg">
+        {isProcessing ? "Signing you in..." : "Redirecting..."}
+      </p>
     </div>
   )
 }

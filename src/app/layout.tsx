@@ -1,6 +1,6 @@
-// app/layout.tsx
 import type { Metadata } from "next";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/react"; // ✅ Import Analytics
 
 export const metadata: Metadata = {
   title: "neocare",
@@ -17,7 +17,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-white font-circular text-gray-900">{children}</body>
+      <body className="bg-white font-circular text-gray-900">
+        {children}
+        <Analytics /> {/* ✅ Add Analytics here */}
+      </body>
     </html>
   );
 }
