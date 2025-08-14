@@ -75,7 +75,7 @@ export default function SignupPage() {
       <form onSubmit={handleSubmit} className="w-full max-w-md space-y-6">
         <div className="text-center">
           <h1 className="text-2xl font-bold">Create your account</h1>
-          <p className="text-sm text-gray-500">We'll send a magic link to get you started.</p>
+          <p className="text-sm text-gray-500">We&apos;ll send a magic link to get you started.</p>
         </div>
 
         <div>
