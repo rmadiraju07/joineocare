@@ -4,12 +4,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Check, X, Bluetooth, Shield, Users, Zap, MapPin, Heart } from "lucide-react"
 
-import { MdOutlineBluetoothSearching } from "react-icons/md";
-import { FaUserShield } from "react-icons/fa6";
-import { FaPeopleGroup } from "react-icons/fa6";
-import { PiBrainFill } from "react-icons/pi";
-import { MdEmergencyShare } from "react-icons/md";
-import { FaLocationArrow } from "react-icons/fa";
+
 
 export default function Home() {
   return (
