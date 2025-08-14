@@ -16,7 +16,7 @@ export default function ConfirmPage() {
         const storedEmail = window.localStorage.getItem("emailForSignIn")
         const storedName = window.localStorage.getItem("signupName")
 
-        // Fallback to prompt if email isn't stored
+        // Fallback to prompt if email isn&apos;t stored
         const emailToUse = storedEmail || window.prompt("Please enter your email to complete sign-in:")
 
         if (!emailToUse) {
@@ -34,7 +34,7 @@ export default function ConfirmPage() {
         const result = await signInWithEmailLink(auth, emailToUse, window.location.href)
         window.localStorage.removeItem("emailForSignIn")
 
-        // If it's a signup, optionally update user profile with display name
+        // If it&apos;s a signup, optionally update user profile with display name
         if (storedName && auth.currentUser) {
           await updateProfile(auth.currentUser, { displayName: storedName })
           window.localStorage.removeItem("signupName")
