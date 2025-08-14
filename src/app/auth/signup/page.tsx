@@ -26,7 +26,7 @@ export default function SignupPage() {
 
   try {
     const actionCodeSettings = {
-      url: "http://localhost:3000/auth/confirm",
+      url: "https://joineocare.vercel.app/auth/confirm",
       handleCodeInApp: true,
     }
 
