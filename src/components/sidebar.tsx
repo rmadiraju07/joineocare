@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { BsHouse, BsJournalText, BsRobot, BsHeart, BsGeoAlt, BsBook, BsPerson, BsList, BsX } from "react-icons/bs"
@@ -27,7 +28,7 @@ export function Sidebar() {
       <Button
         variant="ghost"
         size="icon"
-        className="fixed top-4 left-4 z-50 md:hidden bg-sidebar border border-sidebar-border"
+        className="fixed top-4 left-4 z-50 md:hidden bg-black border border-gray-800 text-white hover:bg-gray-800"
         onClick={() => setIsOpen(!isOpen)}
       >
         {isOpen ? <BsX className="h-5 w-5" /> : <BsList className="h-5 w-5" />}
@@ -36,19 +37,17 @@ export function Sidebar() {
       {/* Sidebar */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-40 w-64 bg-sidebar border-r border-sidebar-border transform transition-transform duration-200 ease-in-out md:translate-x-0",
+          "fixed inset-y-0 left-0 z-40 w-64 bg-black border-r border-gray-800 transform transition-transform duration-200 ease-in-out md:translate-x-0",
           isOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="flex items-center gap-3 px-6 py-6 border-b border-sidebar-border">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <BsHeart className="w-5 h-5 text-primary-foreground" />
-            </div>
+          <div className="flex items-center gap-3 px-6 py-6 border-b border-gray-800">
+            <Image src="/logo.svg" alt="NeoCare Logo" width={32} height={32} className="w-8 h-8" />
             <div>
-              <h1 className="font-heading font-bold text-lg text-sidebar-foreground">NeoCare</h1>
-              <p className="text-xs text-muted-foreground">NICU Family Support</p>
+              <h1 className="font-bold text-lg text-white">NeoCare</h1>
+              <p className="text-xs text-gray-400">NICU Family Support</p>
             </div>
           </div>
 
@@ -64,9 +63,7 @@ export function Sidebar() {
                   href={item.href}
                   className={cn(
                     "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
-                    isActive
-                      ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
-                      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                    isActive ? "bg-white text-black shadow-sm" : "text-gray-300 hover:bg-gray-800 hover:text-white",
                   )}
                   onClick={() => setIsOpen(false)}
                 >
@@ -78,14 +75,16 @@ export function Sidebar() {
           </nav>
 
           {/* Bottom section */}
-          <div className="p-4 border-t border-sidebar-border">
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-muted">
-              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                <span className="text-xs font-semibold text-primary-foreground">JD</span>
-              </div>
+          <div className="p-4 border-t border-gray-800">
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-900">
+              <img
+                src={`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent("John Doe")}&backgroundColor=ffffff&textColor=000000`}
+                alt="Profile"
+                className="w-8 h-8 rounded-full"
+              />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground truncate">John Doe</p>
-                <p className="text-xs text-muted-foreground truncate">Parent</p>
+                <p className="text-sm font-medium text-white truncate">John Doe</p>
+                <p className="text-xs text-gray-400 truncate">Parent</p>
               </div>
             </div>
           </div>
