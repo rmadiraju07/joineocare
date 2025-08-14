@@ -3,7 +3,6 @@
 import type React from "react"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { sendSignInLinkToEmail } from "firebase/auth"
 import { auth } from "@/lib/firebase"
 import Link from "next/link"
@@ -13,7 +12,6 @@ export default function AuthPage() {
   const [email, setEmail] = useState("")
   const [isEmailSent, setIsEmailSent] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
