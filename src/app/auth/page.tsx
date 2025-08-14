@@ -6,6 +6,9 @@ import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
 import { ArrowLeft, Mail, Check } from 'lucide-react'
+import { auth } from "@/lib/firebase"
+import { sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth"
+
 
 export default function AuthPage() {
   const [email, setEmail] = useState("")
@@ -13,15 +16,26 @@ export default function AuthPage() {
   const [isEmailSent, setIsEmailSent] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+  e.preventDefault()
+  setIsLoading(true)
 
-    // Simulate API call for magic link
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+  try {
+    const actionCodeSettings = {
+      url: "http://localhost:3000/auth/confirm",
+      handleCodeInApp: true,
+    }
 
-    setIsLoading(false)
+    await sendSignInLinkToEmail(auth, email, actionCodeSettings)
+    window.localStorage.setItem("emailForSignIn", email)
     setIsEmailSent(true)
+  } catch (error) {
+    console.error("Error sending magic link:", error)
+    alert("Failed to send login link. Please try again.")
+  } finally {
+    setIsLoading(false)
   }
+}
+
 
   if (isEmailSent) {
     return (
