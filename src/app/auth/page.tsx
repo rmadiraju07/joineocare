@@ -70,7 +70,7 @@ export default function AuthPage() {
       <form onSubmit={handleSubmit} className="w-full max-w-md space-y-6">
         <div className="text-center">
           <h1 className="text-2xl font-bold">Sign in</h1>
-          <p className="text-sm text-gray-500">We'll send a magic link to your email.</p>
+          <p className="text-sm text-gray-500">We&apos;ll send a magic link to your email.</p>
         </div>
 
         <div>
@@ -98,7 +98,7 @@ export default function AuthPage() {
         </button>
 
         <p className="text-center text-sm text-gray-500">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link href="/auth/signup" className="text-black underline">
             Sign up
           </Link>
