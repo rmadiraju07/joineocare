@@ -6,7 +6,6 @@ import { auth } from "@/lib/firebase"
 import { signOut, type User as FirebaseUser } from "firebase/auth"
 import { Sidebar } from "@/components/sidebar"
 import {
-  BsJournalText,
   BsRobot,
   BsBook,
   BsGeoAlt,
@@ -14,6 +13,11 @@ import {
   BsCalendar,
   BsChat,
 } from "react-icons/bs"
+
+import { BsJournalText, BsBookmarks, BsPerson, BsList, BsX } from "react-icons/bs"
+import { RiHomeSmile2Line, RiRobot3Line } from "react-icons/ri";
+import { TbHealthRecognition, TbLocation } from "react-icons/tb";
+import { HiMiniMagnifyingGlass } from "react-icons/hi2";
 
 import { IoTrendingUp } from "react-icons/io5";
 import { LuSparkles } from "react-icons/lu";
@@ -143,7 +147,7 @@ export default function DashboardPage() {
 
                 <button className="w-full flex items-center gap-4 p-4 text-left hover:bg-gray-50 rounded-lg transition-all duration-200 group">
                   <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-                    <BsRobot className="w-6 h-6 text-black" />
+                    <RiRobot3Line className="w-6 h-6 text-black" />
                   </div>
                   <div className="flex-1">
                     <h3 className="font-medium text-black">AI Support Chat</h3>
@@ -153,7 +157,7 @@ export default function DashboardPage() {
 
                 <button className="w-full flex items-center gap-4 p-4 text-left hover:bg-gray-50 rounded-lg transition-all duration-200 group">
                   <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-                    <BsBook className="w-6 h-6 text-black" />
+                    <HiMiniMagnifyingGlass className="w-6 h-6 text-black" />
                   </div>
                   <div className="flex-1">
                     <h3 className="font-medium text-black">NICU Glossary</h3>
@@ -163,7 +167,7 @@ export default function DashboardPage() {
 
                 <button className="w-full flex items-center gap-4 p-4 text-left hover:bg-gray-50 rounded-lg transition-all duration-200 group">
                   <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-                    <BsGeoAlt className="w-6 h-6 text-black" />
+                    <TbLocation className="w-6 h-6 text-black" />
                   </div>
                   <div className="flex-1">
                     <h3 className="font-medium text-black">Find NICU Hospitals</h3>
