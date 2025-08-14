@@ -6,15 +6,17 @@ import { usePathname } from "next/navigation"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { BsHouse, BsJournalText, BsRobot, BsHeart, BsGeoAlt, BsBook, BsPerson, BsList, BsX } from "react-icons/bs"
+import { BsJournalText, BsBookmarks, BsPerson, BsList, BsX } from "react-icons/bs"
+import { RiHomeSmile2Line, RiRobot3Line } from "react-icons/ri";
+import { TbHealthRecognition, TbLocation } from "react-icons/tb";
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: BsHouse },
+  { name: "Dashboard", href: "/dashboard", icon: RiHomeSmile2Line },
   { name: "Journal", href: "/journal", icon: BsJournalText },
-  { name: "AI Support", href: "/ai-support", icon: BsRobot },
-  { name: "Wellness", href: "/wellness", icon: BsHeart },
-  { name: "Find NICUs", href: "/find-nicus", icon: BsGeoAlt },
-  { name: "Resources", href: "/resources", icon: BsBook },
+  { name: "AI Support", href: "/ai-support", icon: RiRobot3Line },
+  { name: "Wellness", href: "/wellness", icon: TbHealthRecognition },
+  { name: "Find NICUs", href: "/find-nicus", icon: TbLocation },
+  { name: "Resources", href: "/resources", icon: BsBookmarks },
   { name: "Profile", href: "/profile", icon: BsPerson },
 ]
 
