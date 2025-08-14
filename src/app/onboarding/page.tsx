@@ -6,12 +6,12 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { auth } from "@/lib/firebase"
 import { updateProfile } from "firebase/auth"
-import { User, Briefcase, MapPin, ArrowRight } from "lucide-react"
+import { Heart, Baby, MapPin, ArrowRight } from "lucide-react"
 
 export default function OnboardingPage() {
   const [formData, setFormData] = useState({
-    role: "",
-    organization: "",
+    relationship: "",
+    babyName: "",
     location: "",
   })
   const [isLoading, setIsLoading] = useState(false)
@@ -46,53 +46,59 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <form onSubmit={handleSubmit} className="w-full max-w-md space-y-6">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-blue-50 to-indigo-50">
+      <form onSubmit={handleSubmit} className="w-full max-w-md space-y-6 bg-white p-8 rounded-xl shadow-lg">
         <div className="text-center">
-          <h1 className="text-2xl font-bold">Welcome to EoCare</h1>
-          <p className="text-sm text-gray-500 mt-2">Let&apos;s get you set up with a few quick details.</p>
+          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Heart className="w-8 h-8 text-blue-600" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900">Welcome to NeoCare</h1>
+          <p className="text-sm text-gray-600 mt-2">
+            You&apos;re not alone in this journey. Let&apos;s get you connected to the support you need.
+          </p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">What&apos;s your role?</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Your relationship to baby</label>
           <div className="relative">
             <select
-              name="role"
+              name="relationship"
               required
               disabled={isLoading}
-              value={formData.role}
+              value={formData.relationship}
               onChange={handleChange}
-              className="w-full pl-10 pr-4 py-2 border rounded-md appearance-none bg-white"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md appearance-none bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
-              <option value="">Select your role</option>
-              <option value="healthcare-provider">Healthcare Provider</option>
-              <option value="administrator">Administrator</option>
-              <option value="care-coordinator">Care Coordinator</option>
-              <option value="other">Other</option>
+              <option value="">Select your relationship</option>
+              <option value="mother">Mother</option>
+              <option value="father">Father</option>
+              <option value="grandparent">Grandparent</option>
+              <option value="sibling">Sibling</option>
+              <option value="family-friend">Family Friend</option>
+              <option value="other">Other Family Member</option>
             </select>
-            <User className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+            <Heart className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Organization</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Baby&apos;s name (optional)</label>
           <div className="relative">
             <input
               type="text"
-              name="organization"
-              required
+              name="babyName"
               disabled={isLoading}
-              value={formData.organization}
+              value={formData.babyName}
               onChange={handleChange}
-              className="w-full pl-10 pr-4 py-2 border rounded-md"
-              placeholder="Your hospital or clinic"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="What would you like us to call your little one?"
             />
-            <Briefcase className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+            <Baby className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Your location</label>
           <div className="relative">
             <input
               type="text"
@@ -101,8 +107,8 @@ export default function OnboardingPage() {
               disabled={isLoading}
               value={formData.location}
               onChange={handleChange}
-              className="w-full pl-10 pr-4 py-2 border rounded-md"
-              placeholder="City, State"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="City, State (to find nearby resources)"
             />
             <MapPin className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
           </div>
@@ -111,14 +117,14 @@ export default function OnboardingPage() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2 font-medium transition-colors"
         >
-          {isLoading ? "Setting up..." : "Complete Setup"}
+          {isLoading ? "Setting up your support..." : "Begin Your Journey"}
           {!isLoading && <ArrowRight className="w-4 h-4" />}
         </button>
 
         <p className="text-center text-xs text-gray-500">
-          You can update these details later in your profile settings.
+          Your information is private and secure. You can update these details anytime.
         </p>
       </form>
     </div>
