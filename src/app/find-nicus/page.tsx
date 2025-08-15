@@ -1,24 +1,39 @@
 "use client"
 
 import { useState } from "react"
-import { MapPin, Phone, Clock, Star, Search, Navigation, AlertCircle } from "react-feather"
-import { Sidebar } from "@/components/sidebar"
+import { MapPin, Phone, Clock, Star, Search, Navigation, AlertCircle } from "lucide-react"
 
 interface NICU {
   id: string
   name: string
   address: string
-  phone?: string
+  phone: string | undefined // Made phone explicitly allow undefined to match the mapped data
   distance: string
-  rating?: number
-  level?: string
+  rating: number // Made rating required since we always generate one
+  level: string // Made level required since we always assign one
   beds?: number
-  services?: string[]
-  hours?: string
+  services: string[] // Made services required since we always create an array
+  hours: string // Made hours required since we always provide a value
   lat: number
   lng: number
   website?: string
   type: string
+}
+
+interface OSMElement {
+  type: "node" | "way" | "relation"
+  id: number
+  lat?: number
+  lon?: number
+  center?: {
+    lat: number
+    lon: number
+  }
+  tags?: Record<string, string | number | boolean>
+}
+
+interface OSMResponse {
+  elements: OSMElement[]
 }
 
 const FindNicusPage = () => {
@@ -131,7 +146,7 @@ const FindNicusPage = () => {
         throw new Error(`Overpass API error: ${response.status}`)
       }
 
-      const data = await response.json()
+      const data: OSMResponse = await response.json()
       console.log("[v0] Overpass API response:", data)
 
       if (!data.elements || data.elements.length === 0) {
@@ -140,12 +155,12 @@ const FindNicusPage = () => {
       }
 
       // Process the results
-      const hospitals: NICU[] = data.elements
-        .map((element: any) => {
+      const hospitals = data.elements
+        .map((element: OSMElement) => {
           // Get coordinates - handle different element types
           let elementLat: number, elementLng: number
 
-          if (element.type === "node") {
+          if (element.type === "node" && element.lat && element.lon) {
             elementLat = element.lat
             elementLng = element.lon
           } else if (element.center) {
@@ -156,7 +171,8 @@ const FindNicusPage = () => {
           }
 
           const tags = element.tags || {}
-          const name = tags.name || tags["name:en"] || "Unnamed Hospital"
+          const nameValue = tags.name || tags["name:en"] || "Unnamed Hospital"
+          const name = String(nameValue)
 
           // Skip if no name or if it's clearly not a hospital
           if (!name || name.toLowerCase().includes("pharmacy") || name.toLowerCase().includes("dentist")) {
@@ -165,11 +181,11 @@ const FindNicusPage = () => {
 
           // Build address from available tags
           const addressParts = []
-          if (tags["addr:housenumber"]) addressParts.push(tags["addr:housenumber"])
-          if (tags["addr:street"]) addressParts.push(tags["addr:street"])
-          if (tags["addr:city"]) addressParts.push(tags["addr:city"])
-          if (tags["addr:state"]) addressParts.push(tags["addr:state"])
-          if (tags["addr:postcode"]) addressParts.push(tags["addr:postcode"])
+          if (tags["addr:housenumber"]) addressParts.push(String(tags["addr:housenumber"]))
+          if (tags["addr:street"]) addressParts.push(String(tags["addr:street"]))
+          if (tags["addr:city"]) addressParts.push(String(tags["addr:city"]))
+          if (tags["addr:state"]) addressParts.push(String(tags["addr:state"]))
+          if (tags["addr:postcode"]) addressParts.push(String(tags["addr:postcode"]))
 
           const address = addressParts.length > 0 ? addressParts.join(", ") : "Address not available"
 
@@ -181,10 +197,11 @@ const FindNicusPage = () => {
             name.toLowerCase().includes("pediatric") ||
             name.toLowerCase().includes("paediatric")
 
+          const healthcareSpecialty = tags["healthcare:speciality"] ? String(tags["healthcare:speciality"]) : ""
           const hasNICU =
             isChildrensHospital ||
-            tags["healthcare:speciality"]?.includes("neonatology") ||
-            tags["healthcare:speciality"]?.includes("paediatrics")
+            healthcareSpecialty.includes("neonatology") ||
+            healthcareSpecialty.includes("paediatrics")
 
           // Assign likely NICU level based on hospital characteristics
           let nicuLevel = "Level II NICU"
@@ -216,25 +233,27 @@ const FindNicusPage = () => {
             services.push("Emergency Services", "General Medicine")
           }
 
+          const phoneValue = tags.phone || tags["contact:phone"]
+          const phone = phoneValue ? String(phoneValue) : undefined
+          const openingHours = tags.opening_hours ? String(tags.opening_hours) : "24/7"
+
           return {
             id: `${element.type}_${element.id}`,
             name,
             address,
-            phone: tags.phone || tags["contact:phone"],
+            phone,
             distance: `${distance.toFixed(1)} miles`,
             rating: Math.random() * 1.5 + 3.5, // Generate realistic rating between 3.5-5.0
             level: nicuLevel,
-            // beds: Math.floor(Math.random() * 40) + 15, // Random bed count 15-55
             services,
-            hours: tags.opening_hours || "24/7",
+            hours: openingHours,
             lat: elementLat,
             lng: elementLng,
-            // website: tags.website || tags["contact:website"],
             type: hasNICU ? "NICU" : "Hospital",
           }
         })
-        .filter((hospital: NICU | null): hospital is NICU => hospital !== null)
-        .sort((a: NICU, b: NICU) => Number.parseFloat(a.distance) - Number.parseFloat(b.distance))
+        .filter((hospital): hospital is NICU => hospital !== null) // Type predicate now matches the interface
+        .sort((a, b) => Number.parseFloat(a.distance) - Number.parseFloat(b.distance))
         .slice(0, 20) // Limit to top 20 results
 
       console.log("[v0] Processed hospitals:", hospitals.length)
@@ -380,10 +399,8 @@ const FindNicusPage = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
-
-      <div className="flex-1 ml-64 p-8">
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto p-8">
         {/* Header Section */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Find NICU Hospitals Near You</h1>
@@ -524,8 +541,15 @@ const FindNicusPage = () => {
                       >
                         Get Directions
                       </button>
-                      
-                      
+                      {nicu.phone && (
+                        <button
+                          onClick={() => handleCallHospital(nicu.phone)}
+                          className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2"
+                        >
+                          <Phone className="w-4 h-4" />
+                          <span>Call Hospital</span>
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
