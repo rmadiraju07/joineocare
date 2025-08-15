@@ -28,7 +28,7 @@ export default function OnboardingPage() {
       setCurrentStep(currentStep + 1)
     }
   }
-
+  
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1)

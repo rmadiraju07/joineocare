@@ -14,7 +14,7 @@ const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: RiHomeSmile2Line },
   { name: "Journal", href: "/journal", icon: BsJournalText },
   { name: "AI Support", href: "/ai-support", icon: RiRobot3Line },
-  { name: "Wellness", href: "/wellness", icon: TbHealthRecognition },
+  { name: "Daily Check-in", href: "/wellness", icon: TbHealthRecognition },
   { name: "Find NICUs", href: "/find-nicus", icon: TbLocation },
   { name: "Resources", href: "/resources", icon: BsBookmarks },
   { name: "Profile", href: "/profile", icon: BsPerson },
@@ -46,9 +46,16 @@ export function Sidebar() {
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="flex items-center gap-3 px-6 py-6 border-b border-gray-800">
-            <Image src="/logo.svg" alt="NeoCare Logo" width={32} height={32} className="w-8 h-8" />
+            <Image
+  src="/logo.svg"
+  alt="NeoCare Logo"
+  width={32}
+  height={32}
+  className="w-8 h-8 invert"
+/>
+
             <div>
-              <h1 className="font-bold text-lg text-white">NeoCare</h1>
+              <h1 className="font-bold text-lg text-white">Neocare</h1>
               <p className="text-xs text-gray-400">NICU Family Support</p>
             </div>
           </div>
