@@ -247,40 +247,6 @@ export default function DashboardPage() {
                         : "Every check-in matters. You&apos;re doing great 💙"}
                   </p>
                 </div>
-
-                {/* Today&apos;s Mood Selector (only if today is not checked in) */}
-                {!checkedInDays.has(today) && (
-                  <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                    <p className="text-sm font-medium text-black mb-4">How are you feeling today?</p>
-                    <div className="flex gap-2 mb-3">
-                      {moodEmojis.map((emoji, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setSelectedMood(index)}
-                          className={`w-10 h-10 text-lg rounded-lg transition-all duration-200 ${
-                            selectedMood === index
-                              ? "bg-black text-white ring-2 ring-blue-300"
-                              : "hover:bg-white bg-white/50"
-                          }`}
-                          title={moodLabels[index]}
-                        >
-                          {emoji}
-                        </button>
-                      ))}
-                    </div>
-                    {selectedMood !== null && (
-                      <button
-                        onClick={() => {
-                          setCheckedInDays(new Set([...checkedInDays, today]))
-                          setSelectedMood(null)
-                        }}
-                        className="w-full bg-black text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
-                      >
-                        Complete Today&apos;s Check-in
-                      </button>
-                    )}
-                  </div>
-                )}
               </div>
             </div>
           </div>
