@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
     )
 
     if (hasRecentCheckIn && allCheckIns.length > 0) {
-      let currentDate = new Date()
+      const currentDate = new Date()
       if (allCheckIns[0].check_date !== today) {
         currentDate.setDate(currentDate.getDate() - 1) // Start from yesterday if no check-in today
       }
