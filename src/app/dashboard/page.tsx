@@ -87,7 +87,7 @@ export default function DashboardPage() {
         <main className="p-6 lg:p-8">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-black mb-2">Welcome back</h1>
-            <p className="text-gray-600">You're doing an amazing job. Here's your support space for today.</p>
+            <p className="text-gray-600">You&apos;re doing an amazing job. Here&apos;s your support space for today.</p>
           </div>
 
           {/* Stats */}
@@ -104,7 +104,7 @@ export default function DashboardPage() {
               </div>
               <div className="flex items-center gap-2 text-xs text-gray-500">
                 <LuSparkles className="w-3 h-3" />
-                <span>Keep it up! You're building resilience</span>
+                <span>Keep it up! You&apos;re building resilience</span>
               </div>
             </div>
 
@@ -143,7 +143,7 @@ export default function DashboardPage() {
             <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
               <h2 className="text-lg font-semibold text-black mb-6 flex items-center gap-2">
                 <BsCalendar className="w-5 h-5 text-black" />
-                This Week's Check-ins
+                This Week&apos;s Check-ins
               </h2>
 
               <div className="space-y-6">
@@ -190,10 +190,10 @@ export default function DashboardPage() {
                   </div>
                   <p className="text-xs text-gray-500 mt-2">
                     {checkedInDaysSet.size === 7
-                      ? "Perfect week! You're building amazing consistency 🌟"
+                      ? "Perfect week! You&apos;re building amazing consistency 🌟"
                       : checkedInDaysSet.size >= 5
                       ? "Great progress! Keep up the momentum 💪"
-                      : "Every check-in matters. You're doing great 💙"}
+                      : "Every check-in matters. You&apos;re doing great 💙"}
                   </p>
                 </div>
               </div>
