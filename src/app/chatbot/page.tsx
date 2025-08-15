@@ -18,20 +18,20 @@ interface Message {
 
 const suggestionCards = [
   {
-    title: "What are the advantages",
-    subtitle: "of using Next.js?",
+    title: "How to support my NICU baby?",
+    subtitle: "Practical tips for NICU families",
   },
   {
-    title: "Write code to",
-    subtitle: "demonstrate dijkstra's algorithm",
+    title: "Understanding NICU equipment",
+    subtitle: "Explanation of common devices",
   },
   {
-    title: "Help me write an essay",
-    subtitle: "about silicon valley",
+    title: "Coping with stress",
+    subtitle: "Mental health advice for NICU parents",
   },
   {
-    title: "What is the weather",
-    subtitle: "in San Francisco?",
+    title: "NICU discharge process",
+    subtitle: "What to expect when going home",
   },
 ]
 
@@ -55,17 +55,49 @@ export default function ChatbotPage() {
     setInput("")
     setIsLoading(true)
 
-    // Simulate AI response
-    setTimeout(() => {
+    try {
+      // Send all messages including new user message to your API route
+      const response = await fetch("/api/chatbot", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messages: [
+            ...messages.map((msg) => ({
+              role: msg.role,
+              content: msg.content,
+            })),
+            {
+              role: "user",
+              content: userMessage.content,
+            },
+          ],
+        }),
+      })
+
+      const data = await response.json()
+
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: `I understand you said: "${userMessage.content}". This is a demo response. In a real implementation, this would connect to the Vercel AI SDK for actual AI responses.`,
+        content: data.text || "Sorry, I couldn't process that.",
         timestamp: new Date(),
       }
+
       setMessages((prev) => [...prev, assistantMessage])
+    } catch (error) {
+      console.error("Error fetching AI response:", error)
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: "Sorry, something went wrong. Please try again later.",
+        timestamp: new Date(),
+      }
+      setMessages((prev) => [...prev, errorMessage])
+    } finally {
       setIsLoading(false)
-    }, 1000)
+    }
   }
 
   const handleSuggestionClick = (suggestion: string) => {
@@ -88,11 +120,10 @@ export default function ChatbotPage() {
       <div className="flex-1 overflow-hidden">
         <div className="max-w-4xl mx-auto h-full">
           {messages.length === 0 ? (
-            // Welcome Screen
             <div className="flex flex-col items-center justify-center h-full px-6 py-12">
               <div className="text-center mb-12">
                 <h2 className="text-4xl font-bold mb-4 text-white">Hello there!</h2>
-                <p className="text-xl text-gray-400">How can I help you today?</p>
+                <p className="text-xl text-gray-400">How can I help you with your NICU questions today?</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl">
@@ -111,7 +142,6 @@ export default function ChatbotPage() {
               </div>
             </div>
           ) : (
-            // Chat Messages
             <ScrollArea className="h-full px-6">
               <div className="py-6 space-y-6">
                 {messages.map((message) => (
@@ -190,16 +220,16 @@ export default function ChatbotPage() {
       <div className="border-t border-gray-800 bg-black">
         <div className="max-w-4xl mx-auto px-6 py-4">
           <form onSubmit={handleSubmit} className="flex gap-3">
-            <div className="flex-1">
-  <Input
-    value={input}
-    onChange={(e) => setInput(e.target.value)}
-    placeholder="Send a message..."
-    disabled={isLoading}
-    className="w-full h-12 px-4 bg-gray-900 border-gray-700 rounded-full text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-  />
-</div>
-
+            <div className="flex-1 relative">
+              <Input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Ask me anything about NICU..."
+                disabled={isLoading}
+                className="w-full h-12 pl-12 pr-4 bg-gray-900 border-gray-700 rounded-full text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <Paperclip className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            </div>
             <Button
               type="submit"
               disabled={!input.trim() || isLoading}
