@@ -470,10 +470,10 @@ const FindNicusPage = () => {
         {searchResults.length > 0 && !isSearching && (
           <div>
             <div className="mb-6">
-              <h2 className="text-xl font-semibold text-gray-800 mb-2">
+              <h2 className="text-xl font-semibold text-gray-800 mb-2 pl-4">
                 Found {searchResults.length} hospitals near {searchLocation}
               </h2>
-              <p className="text-gray-600">Results are sorted by distance from your location</p>
+              <p className="text-gray-600 pl-4">Results are sorted by distance from your location</p>
             </div>
 
             <div className="space-y-6">

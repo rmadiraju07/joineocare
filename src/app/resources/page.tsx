@@ -21,7 +21,6 @@ const Page = () => {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [selectedResource, setSelectedResource] = useState<Resource | null>(null)
-  const [bookmarkedResources, setBookmarkedResources] = useState<number[]>([])
 
   const categories = [
     { id: "all", name: "All Resources", icon: BookOpen },
@@ -189,11 +188,6 @@ const Page = () => {
     }
   }
 
-  const toggleBookmark = (resourceId: number) => {
-    setBookmarkedResources((prev) =>
-      prev.includes(resourceId) ? prev.filter((id) => id !== resourceId) : [...prev, resourceId],
-    )
-  }
 
   const openResource = (resource: Resource) => {
     setSelectedResource(resource)
@@ -220,18 +214,18 @@ const Page = () => {
 
         {/* Search and Filter */}
         <div className="mb-8">
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search resources..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
-              />
-            </div>
-          </div>
+  <div className="flex flex-col md:flex-row gap-4 mb-6">
+    <div className="relative flex-1">
+      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+      <input
+        type="text"
+        placeholder="Search resources..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+      />
+    </div>
+  </div>
 
           <div className="flex flex-wrap gap-2">
             {categories.map((category) => {
@@ -261,7 +255,6 @@ const Page = () => {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {featuredResources.map((resource) => {
                 const TypeIcon = getTypeIcon(resource.type)
-                const isBookmarked = bookmarkedResources.includes(resource.id)
                 return (
                   <div
                     key={resource.id}
@@ -273,22 +266,7 @@ const Page = () => {
                         <TypeIcon className="w-5 h-5 text-gray-600" />
                         <span className="text-sm font-medium text-gray-600 capitalize">{resource.type}</span>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-xs text-gray-500">{resource.readTime}</span>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            toggleBookmark(resource.id)
-                          }}
-                          className="p-1 hover:bg-gray-100 rounded"
-                        >
-                          {isBookmarked ? (
-                            <Check className="w-4 h-4 text-black" />
-                          ) : (
-                            <Bookmark className="w-4 h-4 text-gray-400" />
-                          )}
-                        </button>
-                      </div>
+                    
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">{resource.title}</h3>
                     <p className="text-gray-600 text-sm mb-4">{resource.description}</p>
@@ -315,7 +293,6 @@ const Page = () => {
           <div className="grid gap-4">
             {filteredResources.map((resource) => {
               const TypeIcon = getTypeIcon(resource.type)
-              const isBookmarked = bookmarkedResources.includes(resource.id)
               return (
                 <div
                   key={resource.id}
@@ -327,7 +304,7 @@ const Page = () => {
                       <div className="flex items-center space-x-3 mb-2">
                         <TypeIcon className="w-5 h-5 text-gray-600" />
                         <span className="text-sm font-medium text-gray-600 capitalize">{resource.type}</span>
-                        <span className="text-xs text-gray-500">{resource.readTime}</span>
+                        
                         {resource.featured && (
                           <span className="bg-black text-white text-xs px-2 py-1 rounded">Featured</span>
                         )}
@@ -336,19 +313,6 @@ const Page = () => {
                       <p className="text-gray-600 text-sm">{resource.description}</p>
                     </div>
                     <div className="ml-4 flex items-center space-x-2">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          toggleBookmark(resource.id)
-                        }}
-                        className="p-2 hover:bg-gray-100 rounded"
-                      >
-                        {isBookmarked ? (
-                          <Check className="w-4 h-4 text-black" />
-                        ) : (
-                          <Bookmark className="w-4 h-4 text-gray-400" />
-                        )}
-                      </button>
                       <div className="flex items-center space-x-2 text-black font-medium hover:text-gray-700 transition-colors">
                         <span>View</span>
                         <ExternalLink className="w-4 h-4" />
@@ -396,16 +360,9 @@ const Page = () => {
                   })()}
                   <span className="text-sm font-medium text-gray-600 capitalize">{selectedResource.type}</span>
                 </div>
-                <span className="text-xs text-gray-500">{selectedResource.readTime}</span>
+                
               </div>
               <div className="flex items-center space-x-2">
-                <button onClick={() => toggleBookmark(selectedResource.id)} className="p-2 hover:bg-gray-100 rounded">
-                  {bookmarkedResources.includes(selectedResource.id) ? (
-                    <Check className="w-5 h-5 text-black" />
-                  ) : (
-                    <Bookmark className="w-5 h-5 text-gray-400" />
-                  )}
-                </button>
                 <button onClick={closeResource} className="p-2 hover:bg-gray-100 rounded">
                   <X className="w-5 h-5 text-gray-600" />
                 </button>
