@@ -44,7 +44,7 @@ const FindNicusPage = () => {
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null)
 
   const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: number): number => {
-    const R = 3959 // Earth's radius in miles
+    const R = 3959 // Earth&apos;s radius in miles
     const dLat = ((lat2 - lat1) * Math.PI) / 180
     const dLng = ((lng2 - lng1) * Math.PI) / 180
     const a =
@@ -60,7 +60,7 @@ const FindNicusPage = () => {
 
       let searchQuery = location.trim()
 
-      // Detect if it's a US ZIP code (5 digits or 5+4 format)
+      // Detect if it&apos;s a US ZIP code (5 digits or 5+4 format)
       const isUSZipCode = /^\d{5}(-\d{4})?$/.test(searchQuery)
 
       // Add country context for better accuracy
@@ -174,7 +174,7 @@ const FindNicusPage = () => {
           const nameValue = tags.name || tags["name:en"] || "Unnamed Hospital"
           const name = String(nameValue)
 
-          // Skip if no name or if it's clearly not a hospital
+          // Skip if no name or if it&apos;s clearly not a hospital
           if (!name || name.toLowerCase().includes("pharmacy") || name.toLowerCase().includes("dentist")) {
             return null
           }
@@ -574,7 +574,7 @@ const FindNicusPage = () => {
 
             {/* Quick Tips */}
             <div className="bg-white border-2 border-gray-200 rounded-lg p-6 max-w-2xl mx-auto">
-              <h4 className="font-semibold text-gray-800 mb-4">What you'll find:</h4>
+              <h4 className="font-semibold text-gray-800 mb-4">What you&apos;ll find:</h4>
               <div className="grid md:grid-cols-2 gap-4 text-left">
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
