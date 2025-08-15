@@ -4,6 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { Search, BookOpen, Video, FileText, Heart, Users, Shield, ExternalLink } from "lucide-react"
 import { X, Bookmark, Check } from "lucide-react"
+import { Sidebar } from "@/components/sidebar"
 
 interface Resource {
   id: number
@@ -205,29 +206,7 @@ const Page = () => {
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar Component */}
-      <div className="w-64 bg-gray-800 text-white p-4">
-        <h2 className="text-xl font-bold mb-4">Categories</h2>
-        <ul className="space-y-2">
-          {categories.map((category) => {
-            const IconComponent = category.icon
-            return (
-              <li key={category.id}>
-                <button
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                    selectedCategory === category.id
-                      ? "bg-white text-gray-800"
-                      : "bg-gray-800 text-white hover:bg-gray-700"
-                  }`}
-                >
-                  <IconComponent className="w-5 h-5" />
-                  <span>{category.name}</span>
-                </button>
-              </li>
-            )
-          })}
-        </ul>
-      </div>
+      <Sidebar />
 
       <div className="flex-1 ml-64 p-8">
         {/* Header */}
