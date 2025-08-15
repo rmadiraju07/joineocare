@@ -233,8 +233,8 @@ const FindNicusPage = () => {
             type: hasNICU ? "NICU" : "Hospital",
           }
         })
-        .filter((hospital): hospital is NICU => hospital !== null)
-        .sort((a, b) => Number.parseFloat(a.distance) - Number.parseFloat(b.distance))
+        .filter((hospital: NICU | null): hospital is NICU => hospital !== null)
+        .sort((a: NICU, b: NICU) => Number.parseFloat(a.distance) - Number.parseFloat(b.distance))
         .slice(0, 20) // Limit to top 20 results
 
       console.log("[v0] Processed hospitals:", hospitals.length)
@@ -457,7 +457,7 @@ const FindNicusPage = () => {
             </div>
 
             <div className="space-y-6">
-              {searchResults.map((nicu) => (
+              {searchResults.map((nicu: NICU) => (
                 <div
                   key={nicu.id}
                   className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-gray-300 transition-colors"
