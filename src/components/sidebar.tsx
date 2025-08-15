@@ -16,7 +16,6 @@ const navigation = [
   { name: "Chatbot", href: "/chatbot", icon: RiRobot3Line },
   { name: "Find NICUs", href: "/find-nicus", icon: TbLocation },
   { name: "Resources", href: "/resources", icon: BsBookmarks },
-  { name: "Profile", href: "/profile", icon: BsPerson },
 ]
 
 export function Sidebar() {
@@ -82,20 +81,6 @@ export function Sidebar() {
             })}
           </nav>
 
-          {/* Bottom section */}
-          <div className="p-4 border-t border-gray-800">
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-900">
-              <img
-                src={`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent("John Doe")}&backgroundColor=ffffff&textColor=000000`}
-                alt="Profile"
-                className="w-8 h-8 rounded-full"
-              />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">John Doe</p>
-                <p className="text-xs text-gray-400 truncate">Parent</p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
