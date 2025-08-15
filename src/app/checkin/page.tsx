@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { Heart, Calendar, Edit3, Save, Smile, Meh, Frown } from "react-feather"
 import { Sidebar } from "@/components/sidebar"
-import { auth } from "@/lib/firebase"
 
 const CheckInPage = () => {
   const [selectedMood, setSelectedMood] = useState<string>("")
@@ -18,50 +17,36 @@ const CheckInPage = () => {
     { id: "difficult", label: "Difficult", icon: Frown, color: "text-red-500" },
   ]
 
+  const handleSubmit = async () => {
+    if (!selectedMood) return
 
-const handleSubmit = async () => {
-  if (!selectedMood) return
-
-  const user = auth.currentUser
-
-  if (!user) {
-    console.error("User is not logged in")
-    return
-  }
-
-  const idToken = await user.getIdToken()
-
-  const payload = {
-    userId: user.uid,
-    mood: selectedMood,
-    gratitude,
-    challenges,
-    journalEntry,
-  }
-
-  try {
-    const res = await fetch("/api/checkin", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${idToken}`,
-      },
-      body: JSON.stringify(payload),
-    })
-
-    if (res.ok) {
-      setIsSubmitted(true)
-      setTimeout(() => setIsSubmitted(false), 3000)
-    } else {
-      const { error } = await res.json()
-      console.error("Check-in failed:", error)
+    const payload = {
+      mood: selectedMood,
+      gratitude,
+      challenges,
+      journalEntry,
     }
-  } catch (err) {
-    console.error("Unexpected error:", err)
+
+    try {
+      const res = await fetch("/api/checkin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
+
+      if (res.ok) {
+        setIsSubmitted(true)
+        setTimeout(() => setIsSubmitted(false), 3000)
+      } else {
+        const { error } = await res.json()
+        console.error("Check-in failed:", error)
+      }
+    } catch (err) {
+      console.error("Unexpected error:", err)
+    }
   }
-}
-
-
 
   return (
     <div className="flex min-h-screen bg-gray-50">

@@ -1,9 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { auth } from "@/lib/firebase"
-import { signOut, type User as FirebaseUser } from "firebase/auth"
 import { Sidebar } from "@/components/sidebar"
 import { BsHeart, BsCalendar } from "react-icons/bs"
 
@@ -15,14 +12,21 @@ import { HiMiniMagnifyingGlass } from "react-icons/hi2"
 import { IoTrendingUp } from "react-icons/io5"
 import { LuSparkles } from "react-icons/lu"
 
-export default function DashboardPage() {
-  const [user, setUser] = useState<FirebaseUser | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [streak, setStreak] = useState(7)
-  const [selectedMood, setSelectedMood] = useState<number | null>(null)
-  const router = useRouter()
+interface DashboardData {
+  streak: number
+  journalEntries: number
+  checkedInDays: number[]
+  thisWeekCheckIns: any[]
+}
 
-  const [checkedInDays, setCheckedInDays] = useState<Set<number>>(new Set([0, 1, 2, 4, 6])) // Mock data: checked in on Sun, Mon, Tue, Thu, Sat
+export default function DashboardPage() {
+  const [isLoading, setIsLoading] = useState(true)
+  const [dashboardData, setDashboardData] = useState<DashboardData>({
+    streak: 0,
+    journalEntries: 0,
+    checkedInDays: [],
+    thisWeekCheckIns: [],
+  })
 
   const getCurrentWeek = () => {
     const today = new Date()
@@ -44,29 +48,23 @@ export default function DashboardPage() {
   const today = new Date().getDay()
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUser(user)
-      } else {
-        router.push("/auth")
+    const fetchDashboardData = async () => {
+      try {
+        const response = await fetch("/api/dashboard")
+
+        if (response.ok) {
+          const data = await response.json()
+          setDashboardData(data)
+        }
+      } catch (error) {
+        console.error("Failed to fetch dashboard data:", error)
+      } finally {
+        setIsLoading(false)
       }
-      setIsLoading(false)
-    })
-
-    return () => unsubscribe()
-  }, [router])
-
-  const handleSignOut = async () => {
-    try {
-      await signOut(auth)
-      router.push("/auth")
-    } catch (error) {
-      console.error("Error signing out:", error)
     }
-  }
 
-  const moodEmojis = ["😔", "😐", "🙂", "😊", "😄"]
-  const moodLabels = ["Struggling", "Okay", "Good", "Great", "Amazing"]
+    fetchDashboardData()
+  }, [])
 
   if (isLoading) {
     return (
@@ -79,6 +77,8 @@ export default function DashboardPage() {
     )
   }
 
+  const checkedInDaysSet = new Set(dashboardData.checkedInDays)
+
   return (
     <div className="min-h-screen bg-white">
       <Sidebar />
@@ -88,9 +88,7 @@ export default function DashboardPage() {
         <main className="p-6 lg:p-8">
           {/* Welcome Section */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-black mb-2">
-              Welcome back, {user?.displayName?.split(" ")[0] || "there"}
-            </h1>
+            <h1 className="text-3xl font-bold text-black mb-2">Welcome back</h1>
             <p className="text-gray-600">You&apos;re doing an amazing job. Here&apos;s your support space for today.</p>
           </div>
 
@@ -100,7 +98,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Daily Check-in Streak</p>
-                  <p className="text-3xl font-bold text-black">{streak}</p>
+                  <p className="text-3xl font-bold text-black">{dashboardData.streak}</p>
                 </div>
                 <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
                   <IoTrendingUp className="w-6 h-6 text-black" />
@@ -116,7 +114,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Journal Entries</p>
-                  <p className="text-3xl font-bold text-black">12</p>
+                  <p className="text-3xl font-bold text-black">{dashboardData.journalEntries}</p>
                 </div>
                 <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
                   <BsJournalText className="w-6 h-6 text-black" />
@@ -189,39 +187,27 @@ export default function DashboardPage() {
                 <div className="grid grid-cols-7 gap-2">
                   {weekDays.map((date, index) => {
                     const isToday = index === today
-                    const isCheckedIn = checkedInDays.has(index)
+                    const isCheckedIn = checkedInDaysSet.has(index)
                     const dayNumber = date.getDate()
 
                     return (
                       <div key={index} className="text-center">
                         <div className="text-xs font-medium text-gray-600 mb-2">{dayNames[index]}</div>
-                        <button
-                          onClick={() => {
-                            if (index <= today) {
-                              const newCheckedInDays = new Set(checkedInDays)
-                              if (isCheckedIn) {
-                                newCheckedInDays.delete(index)
-                              } else {
-                                newCheckedInDays.add(index)
-                              }
-                              setCheckedInDays(newCheckedInDays)
-                            }
-                          }}
-                          disabled={index > today}
-                          className={`w-12 h-12 rounded-lg text-sm font-medium transition-all duration-200 ${
+                        <div
+                          className={`w-12 h-12 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center ${
                             isToday && isCheckedIn
                               ? "bg-black text-white ring-2 ring-gray-300"
                               : isToday
-                                ? "bg-gray-100 text-black border-2 border-black hover:bg-gray-200"
+                                ? "bg-gray-100 text-black border-2 border-black"
                                 : isCheckedIn
                                   ? "bg-green-100 text-green-800 border border-green-200"
                                   : index > today
-                                    ? "bg-gray-50 text-gray-400 cursor-not-allowed"
-                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200"
+                                    ? "bg-gray-50 text-gray-400"
+                                    : "bg-gray-100 text-gray-600 border border-gray-200"
                           }`}
                         >
                           {isCheckedIn ? "✓" : dayNumber}
-                        </button>
+                        </div>
                       </div>
                     )
                   })}
@@ -231,18 +217,18 @@ export default function DashboardPage() {
                 <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-medium text-black">This Week</span>
-                    <span className="text-sm text-gray-600">{checkedInDays.size}/7 days</span>
+                    <span className="text-sm text-gray-600">{checkedInDaysSet.size}/7 days</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
                       className="bg-black h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${(checkedInDays.size / 7) * 100}%` }}
+                      style={{ width: `${(checkedInDaysSet.size / 7) * 100}%` }}
                     ></div>
                   </div>
                   <p className="text-xs text-gray-500 mt-2">
-                    {checkedInDays.size === 7
+                    {checkedInDaysSet.size === 7
                       ? "Perfect week! You&apos;re building amazing consistency 🌟"
-                      : checkedInDays.size >= 5
+                      : checkedInDaysSet.size >= 5
                         ? "Great progress! Keep up the momentum 💪"
                         : "Every check-in matters. You&apos;re doing great 💙"}
                   </p>

@@ -1,6 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { sql } from "@/lib/nile"
-import { verifyFirebaseToken } from "@/lib/auth"
+import { nile } from "@/lib/nile"
 
 interface CheckInRequest {
   mood: "great" | "okay" | "difficult"
@@ -11,8 +10,7 @@ interface CheckInRequest {
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify Firebase token and get user ID
-    const userId = await verifyFirebaseToken(request)
+    const ctx = await nile.configureNile(request)
 
     const body: CheckInRequest = await request.json()
     const { mood, gratitude, challenges, journalEntry } = body
@@ -22,12 +20,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Valid mood is required" }, { status: 400 })
     }
 
-    // Insert check-in into database
-    const result = await sql`
-      INSERT INTO check_ins (user_id, mood, gratitude, challenges, journal_entry)
-      VALUES (${userId}, ${mood}, ${gratitude || ""}, ${challenges || ""}, ${journalEntry || ""})
-      RETURNING id, created_at
-    `
+    const result = await ctx.query(
+      `INSERT INTO check_ins (tenant_id, mood, gratitude, challenges, journal_entry)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING id, created_at`,
+      [ctx.tenantId, mood, gratitude || "", challenges || "", journalEntry || ""],
+    )
 
     return NextResponse.json({
       success: true,
@@ -41,16 +39,15 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const userId = await verifyFirebaseToken(request)
+    const ctx = await nile.configureNile(request)
 
-    // Get recent check-ins for the user
-    const checkIns = await sql`
-      SELECT id, mood, gratitude, challenges, journal_entry, created_at
-      FROM check_ins 
-      WHERE user_id = ${userId}
-      ORDER BY created_at DESC
-      LIMIT 30
-    `
+    // Get recent check-ins for the current tenant
+    const checkIns = await ctx.query(
+      `SELECT id, mood, gratitude, challenges, journal_entry, created_at
+       FROM check_ins 
+       ORDER BY created_at DESC
+       LIMIT 30`,
+    )
 
     return NextResponse.json({ checkIns })
   } catch (error) {

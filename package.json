@@ -11,6 +11,8 @@
   "dependencies": {
     "@ai-sdk/openai": "^2.0.14",
     "@ai-sdk/xai": "^2.0.7",
+    "@niledatabase/react": "^5.0.1",
+    "@niledatabase/server": "^5.0.1",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-progress": "^1.1.7",
     "@radix-ui/react-scroll-area": "^1.2.10",
