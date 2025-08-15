@@ -181,7 +181,7 @@ export default function DashboardPage() {
             <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
               <h2 className="text-lg font-semibold text-black mb-6 flex items-center gap-2">
                 <BsCalendar className="w-5 h-5 text-black" />
-                This Week's Check-ins
+                This Week&apos;s Check-ins
               </h2>
 
               <div className="space-y-6">
@@ -241,14 +241,14 @@ export default function DashboardPage() {
                   </div>
                   <p className="text-xs text-gray-500 mt-2">
                     {checkedInDays.size === 7
-                      ? "Perfect week! You're building amazing consistency 🌟"
+                      ? "Perfect week! You&apos;re building amazing consistency 🌟"
                       : checkedInDays.size >= 5
                         ? "Great progress! Keep up the momentum 💪"
-                        : "Every check-in matters. You're doing great 💙"}
+                        : "Every check-in matters. You&apos;re doing great 💙"}
                   </p>
                 </div>
 
-                {/* Today's Mood Selector (only if today is not checked in) */}
+                {/* Today&apos;s Mood Selector (only if today is not checked in) */}
                 {!checkedInDays.has(today) && (
                   <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
                     <p className="text-sm font-medium text-black mb-4">How are you feeling today?</p>
@@ -276,7 +276,7 @@ export default function DashboardPage() {
                         }}
                         className="w-full bg-black text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
                       >
-                        Complete Today's Check-in
+                        Complete Today&apos;s Check-in
                       </button>
                     )}
                   </div>
