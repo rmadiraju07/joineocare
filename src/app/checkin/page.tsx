@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Heart, Calendar, Edit3, Save, Smile, Meh, Frown } from "react-feather"
 import { Sidebar } from "@/components/sidebar"
-import { getAuth } from "firebase/auth"
+import { auth } from "@/lib/firebase"
 
 const CheckInPage = () => {
   const [selectedMood, setSelectedMood] = useState<string>("")
@@ -22,7 +22,6 @@ const CheckInPage = () => {
 const handleSubmit = async () => {
   if (!selectedMood) return
 
-  const auth = getAuth()
   const user = auth.currentUser
 
   if (!user) {
