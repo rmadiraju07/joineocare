@@ -8,6 +8,8 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Send, Bot, User, ArrowLeft, Paperclip } from "lucide-react"
 import Link from "next/link"
+import ReactMarkdown from "react-markdown"
+
 
 interface Message {
   id: string
@@ -164,7 +166,19 @@ export default function ChatbotPage() {
                           : "bg-gray-800 text-white border border-gray-700"
                       } rounded-2xl px-4 py-3`}
                     >
-                      <p className="text-sm leading-relaxed">{message.content}</p>
+                      <ReactMarkdown
+  components={{
+    h1: ({ children }) => <h1 className="text-xl font-bold">{children}</h1>,
+    h2: ({ children }) => <h2 className="text-lg font-semibold">{children}</h2>,
+    ul: ({ children }) => <ul className="list-disc pl-6 space-y-1">{children}</ul>,
+    li: ({ children }) => <li className="text-sm">{children}</li>,
+    strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+    p: ({ children }) => <p className="mb-2">{children}</p>,
+  }}
+>
+  {message.content}
+</ReactMarkdown>
+
                       <p className={`text-xs mt-2 ${message.role === "user" ? "opacity-80" : "text-gray-400"}`}>
                         {message.timestamp.toLocaleTimeString([], {
                           hour: "2-digit",
