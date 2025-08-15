@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { MapPin, Phone, Clock, Star, Search, Navigation, AlertCircle } from "lucide-react"
+import { Sidebar } from "@/components/sidebar"
 
 interface NICU {
   id: string
@@ -399,8 +400,10 @@ const FindNicusPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto p-8">
+    <div className="flex min-h-screen">
+        <Sidebar />
+        <main className="flex-1 ml-0 md:ml-64 bg-gray-50">
+            <div className="max-w-7xl mx-auto p-8"></div>
         {/* Header Section */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Find NICU Hospitals Near You</h1>
@@ -600,9 +603,10 @@ const FindNicusPage = () => {
             </div>
           </div>
         )}
-      </div>
+      </main>
     </div>
-  )
+  );
 }
+
 
 export default FindNicusPage
