@@ -1,11 +1,24 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { nile } from "@/lib/nile"
 
+interface CheckInDate {
+  check_date: string
+  count?: string
+}
+
+interface JournalCount {
+  count: string
+}
+
 export async function GET(request: NextRequest) {
   try {
-    const ctx = await nile.configureNile(request)
+    const session = await nile.api.auth.getSession(request)
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
 
-    // Get current week's check-ins
+    const user = session.user
+
     const weekStart = new Date()
     weekStart.setDate(weekStart.getDate() - weekStart.getDay()) // Start of current week (Sunday)
     weekStart.setHours(0, 0, 0, 0)
@@ -14,30 +27,31 @@ export async function GET(request: NextRequest) {
     weekEnd.setDate(weekStart.getDate() + 6) // End of current week (Saturday)
     weekEnd.setHours(23, 59, 59, 999)
 
-    // Get this week's check-ins
-    const thisWeekCheckIns = await ctx.query(
+    const thisWeekCheckIns = await nile.db.query<CheckInDate>(
       `SELECT DATE(created_at) as check_date, COUNT(*) as count
        FROM check_ins 
-       WHERE created_at >= $1 AND created_at <= $2
+       WHERE user_id = $1 AND created_at >= $2 AND created_at <= $3
        GROUP BY DATE(created_at)
        ORDER BY check_date`,
-      [weekStart.toISOString(), weekEnd.toISOString()],
+      [user.id, weekStart.toISOString(), weekEnd.toISOString()],
     )
 
-    // Calculate streak (consecutive days with check-ins)
-    const allCheckIns = await ctx.query(
+    const allCheckIns = await nile.db.query<CheckInDate>(
       `SELECT DATE(created_at) as check_date
        FROM check_ins 
+       WHERE user_id = $1
        GROUP BY DATE(created_at)
        ORDER BY check_date DESC`,
+      [user.id],
     )
 
     let streak = 0
     const today = new Date().toISOString().split("T")[0]
     const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split("T")[0]
 
-    // Check if user checked in today or yesterday to start streak count
-    const hasRecentCheckIn = allCheckIns.some((ci: any) => ci.check_date === today || ci.check_date === yesterday)
+    const hasRecentCheckIn = allCheckIns.some(
+      (ci: CheckInDate) => ci.check_date === today || ci.check_date === yesterday,
+    )
 
     if (hasRecentCheckIn && allCheckIns.length > 0) {
       const currentDate = new Date()
@@ -47,7 +61,7 @@ export async function GET(request: NextRequest) {
 
       for (const checkIn of allCheckIns) {
         const checkInDate = currentDate.toISOString().split("T")[0]
-        if ((checkIn as any).check_date === checkInDate) {
+        if (checkIn.check_date === checkInDate) {
           streak++
           currentDate.setDate(currentDate.getDate() - 1)
         } else {
@@ -56,19 +70,18 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Get total journal entries count
-    const journalCount = await ctx.query(
+    const journalCount = await nile.db.query<JournalCount>(
       `SELECT COUNT(*) as count
        FROM check_ins 
-       WHERE journal_entry IS NOT NULL 
+       WHERE user_id = $1
+         AND journal_entry IS NOT NULL 
          AND journal_entry != ''
-         AND created_at >= $1`,
-      [weekStart.toISOString()],
+         AND created_at >= $2`,
+      [user.id, weekStart.toISOString()],
     )
 
-    // Format this week's check-ins for the calendar
-    const checkedInDays = new Set()
-    thisWeekCheckIns.forEach((checkIn: any) => {
+    const checkedInDays = new Set<number>()
+    thisWeekCheckIns.forEach((checkIn: CheckInDate) => {
       const date = new Date(checkIn.check_date)
       const dayOfWeek = date.getDay() // 0 = Sunday, 1 = Monday, etc.
       checkedInDays.add(dayOfWeek)
@@ -76,7 +89,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       streak,
-      journalEntries: Number.parseInt((journalCount[0] as any).count),
+      journalEntries: Number.parseInt(journalCount[0].count),
       checkedInDays: Array.from(checkedInDays),
       thisWeekCheckIns,
     })

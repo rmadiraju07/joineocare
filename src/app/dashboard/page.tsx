@@ -2,21 +2,23 @@
 
 import { useEffect, useState } from "react"
 import { Sidebar } from "@/components/sidebar"
-import { BsHeart, BsCalendar } from "react-icons/bs"
-
-import { BsJournalText } from "react-icons/bs"
+import { BsHeart, BsCalendar, BsJournalText } from "react-icons/bs"
 import { RiRobot3Line } from "react-icons/ri"
 import { TbLocation } from "react-icons/tb"
 import { HiMiniMagnifyingGlass } from "react-icons/hi2"
-
 import { IoTrendingUp } from "react-icons/io5"
 import { LuSparkles } from "react-icons/lu"
+
+interface CheckInDate {
+  check_date: string
+  count?: string
+}
 
 interface DashboardData {
   streak: number
   journalEntries: number
   checkedInDays: number[]
-  thisWeekCheckIns: any[]
+  thisWeekCheckIns: CheckInDate[]
 }
 
 export default function DashboardPage() {
@@ -30,7 +32,7 @@ export default function DashboardPage() {
 
   const getCurrentWeek = () => {
     const today = new Date()
-    const currentDay = today.getDay() // 0 = Sunday, 1 = Monday, etc.
+    const currentDay = today.getDay()
     const startOfWeek = new Date(today)
     startOfWeek.setDate(today.getDate() - currentDay)
 
@@ -51,9 +53,8 @@ export default function DashboardPage() {
     const fetchDashboardData = async () => {
       try {
         const response = await fetch("/api/dashboard")
-
         if (response.ok) {
-          const data = await response.json()
+          const data: DashboardData = await response.json()
           setDashboardData(data)
         }
       } catch (error) {
@@ -82,17 +83,14 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-white">
       <Sidebar />
-
-      {/* Main Content */}
       <div className="md:ml-64">
         <main className="p-6 lg:p-8">
-          {/* Welcome Section */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-black mb-2">Welcome back</h1>
-            <p className="text-gray-600">You&apos;re doing an amazing job. Here&apos;s your support space for today.</p>
+            <p className="text-gray-600">You're doing an amazing job. Here's your support space for today.</p>
           </div>
 
-          {/* Stats Grid */}
+          {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-4">
@@ -106,7 +104,7 @@ export default function DashboardPage() {
               </div>
               <div className="flex items-center gap-2 text-xs text-gray-500">
                 <LuSparkles className="w-3 h-3" />
-                <span>Keep it up! You&apos;re building resilience</span>
+                <span>Keep it up! You're building resilience</span>
               </div>
             </div>
 
@@ -124,66 +122,31 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Main Grid */}
+          {/* Support Tools & Weekly Calendar */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Support Tools */}
+            {/* Tools */}
             <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
               <h2 className="text-lg font-semibold text-black mb-6 flex items-center gap-2">
                 <BsHeart className="w-5 h-5 text-black" />
                 Your Support Tools
               </h2>
               <div className="space-y-3">
-                <button className="w-full flex items-center gap-4 p-4 text-left hover:bg-gray-50 rounded-lg transition-all duration-200 group">
-                  <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-                    <BsJournalText className="w-6 h-6 text-black" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-medium text-black">Private Journal</h3>
-                    <p className="text-sm text-gray-600">Write your thoughts safely and privately</p>
-                  </div>
-                </button>
-
-                <button className="w-full flex items-center gap-4 p-4 text-left hover:bg-gray-50 rounded-lg transition-all duration-200 group">
-                  <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-                    <RiRobot3Line className="w-6 h-6 text-black" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-medium text-black">AI Support Chat</h3>
-                    <p className="text-sm text-gray-600">Talk when you need emotional support</p>
-                  </div>
-                </button>
-
-                <button className="w-full flex items-center gap-4 p-4 text-left hover:bg-gray-50 rounded-lg transition-all duration-200 group">
-                  <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-                    <HiMiniMagnifyingGlass className="w-6 h-6 text-black" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-medium text-black">NICU Glossary</h3>
-                    <p className="text-sm text-gray-600">Clear, simple medical terms & resources</p>
-                  </div>
-                </button>
-
-                <button className="w-full flex items-center gap-4 p-4 text-left hover:bg-gray-50 rounded-lg transition-all duration-200 group">
-                  <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-                    <TbLocation className="w-6 h-6 text-black" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-medium text-black">Find NICU Hospitals</h3>
-                    <p className="text-sm text-gray-600">Locate specialized care near you</p>
-                  </div>
-                </button>
+                {/* Tool Buttons */}
+                <ToolButton icon={<BsJournalText />} title="Private Journal" description="Write your thoughts safely and privately" />
+                <ToolButton icon={<RiRobot3Line />} title="AI Support Chat" description="Talk when you need emotional support" />
+                <ToolButton icon={<HiMiniMagnifyingGlass />} title="NICU Glossary" description="Clear, simple medical terms & resources" />
+                <ToolButton icon={<TbLocation />} title="Find NICU Hospitals" description="Locate specialized care near you" />
               </div>
             </div>
 
-            {/* Weekly Calendar */}
+            {/* Calendar */}
             <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
               <h2 className="text-lg font-semibold text-black mb-6 flex items-center gap-2">
                 <BsCalendar className="w-5 h-5 text-black" />
-                This Week&apos;s Check-ins
+                This Week's Check-ins
               </h2>
 
               <div className="space-y-6">
-                {/* Weekly Calendar */}
                 <div className="grid grid-cols-7 gap-2">
                   {weekDays.map((date, index) => {
                     const isToday = index === today
@@ -198,12 +161,12 @@ export default function DashboardPage() {
                             isToday && isCheckedIn
                               ? "bg-black text-white ring-2 ring-gray-300"
                               : isToday
-                                ? "bg-gray-100 text-black border-2 border-black"
-                                : isCheckedIn
-                                  ? "bg-green-100 text-green-800 border border-green-200"
-                                  : index > today
-                                    ? "bg-gray-50 text-gray-400"
-                                    : "bg-gray-100 text-gray-600 border border-gray-200"
+                              ? "bg-gray-100 text-black border-2 border-black"
+                              : isCheckedIn
+                              ? "bg-green-100 text-green-800 border border-green-200"
+                              : index > today
+                              ? "bg-gray-50 text-gray-400"
+                              : "bg-gray-100 text-gray-600 border border-gray-200"
                           }`}
                         >
                           {isCheckedIn ? "✓" : dayNumber}
@@ -213,7 +176,7 @@ export default function DashboardPage() {
                   })}
                 </div>
 
-                {/* Check-in Stats */}
+                {/* Progress Bar */}
                 <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-medium text-black">This Week</span>
@@ -227,10 +190,10 @@ export default function DashboardPage() {
                   </div>
                   <p className="text-xs text-gray-500 mt-2">
                     {checkedInDaysSet.size === 7
-                      ? "Perfect week! You&apos;re building amazing consistency 🌟"
+                      ? "Perfect week! You're building amazing consistency 🌟"
                       : checkedInDaysSet.size >= 5
-                        ? "Great progress! Keep up the momentum 💪"
-                        : "Every check-in matters. You&apos;re doing great 💙"}
+                      ? "Great progress! Keep up the momentum 💪"
+                      : "Every check-in matters. You're doing great 💙"}
                   </p>
                 </div>
               </div>
@@ -239,5 +202,27 @@ export default function DashboardPage() {
         </main>
       </div>
     </div>
+  )
+}
+
+function ToolButton({
+  icon,
+  title,
+  description,
+}: {
+  icon: React.ReactNode
+  title: string
+  description: string
+}) {
+  return (
+    <button className="w-full flex items-center gap-4 p-4 text-left hover:bg-gray-50 rounded-lg transition-all duration-200 group">
+      <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors">
+        {icon}
+      </div>
+      <div className="flex-1">
+        <h3 className="font-medium text-black">{title}</h3>
+        <p className="text-sm text-gray-600">{description}</p>
+      </div>
+    </button>
   )
 }

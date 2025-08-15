@@ -10,7 +10,10 @@ interface CheckInRequest {
 
 export async function POST(request: NextRequest) {
   try {
-    const ctx = await nile.configureNile(request)
+    const session = await nile.api.auth.getSession(request)
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
 
     const body: CheckInRequest = await request.json()
     const { mood, gratitude, challenges, journalEntry } = body
@@ -20,16 +23,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Valid mood is required" }, { status: 400 })
     }
 
-    const result = await ctx.query(
-      `INSERT INTO check_ins (tenant_id, mood, gratitude, challenges, journal_entry)
+    const result = await nile.db.query(
+      `INSERT INTO check_ins (user_id, mood, gratitude, challenges, journal_entry)
        VALUES ($1, $2, $3, $4, $5)
        RETURNING id, created_at`,
-      [ctx.tenantId, mood, gratitude || "", challenges || "", journalEntry || ""],
+      [session.user.id, mood, gratitude || "", challenges || "", journalEntry || ""],
     )
 
     return NextResponse.json({
       success: true,
-      checkIn: result[0],
+      checkIn: result.rows[0],
     })
   } catch (error) {
     console.error("Check-in error:", error)
@@ -39,17 +42,21 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const ctx = await nile.configureNile(request)
+    const session = await nile.api.auth.getSession(request)
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
 
-    // Get recent check-ins for the current tenant
-    const checkIns = await ctx.query(
+    const result = await nile.db.query(
       `SELECT id, mood, gratitude, challenges, journal_entry, created_at
        FROM check_ins 
+       WHERE user_id = $1
        ORDER BY created_at DESC
        LIMIT 30`,
+      [session.user.id],
     )
 
-    return NextResponse.json({ checkIns })
+    return NextResponse.json({ checkIns: result.rows })
   } catch (error) {
     console.error("Fetch check-ins error:", error)
     return NextResponse.json({ error: "Failed to fetch check-ins" }, { status: 500 })
