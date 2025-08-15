@@ -406,8 +406,8 @@ const FindNicusPage = () => {
             <div className="max-w-7xl mx-auto p-8"></div>
         {/* Header Section */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Find NICU Hospitals Near You</h1>
-          <p className="text-gray-600 max-w-2xl">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4 pl-4">Find NICU Hospitals Near You</h1>
+          <p className="text-gray-600 max-w-2xl pl-4">
             Locate nearby Neonatal Intensive Care Units with detailed information about services, contact details, and
             specialized care options for your baby.
           </p>
