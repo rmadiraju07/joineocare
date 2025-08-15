@@ -254,6 +254,9 @@ export default function ChatbotPage() {
               <span className="sr-only">Send message</span>
             </Button>
           </form>
+          <p className="text-xs text-gray-400 text-center mt-2">
+            The responses provided by this chatbot are for informational purposes only and should not be considered medical advice. Always consult with a qualified healthcare provider for guidance related to your baby’s health or NICU care decisions.
+          </p>
         </div>
       </div>
     </div>
