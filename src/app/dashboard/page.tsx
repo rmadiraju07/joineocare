@@ -107,19 +107,6 @@ export default function DashboardPage() {
                 <span>Keep it up! You&apos;re building resilience</span>
               </div>
             </div>
-
-            <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Journal Entries</p>
-                  <p className="text-3xl font-bold text-black">{dashboardData.journalEntries}</p>
-                </div>
-                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                  <BsJournalText className="w-6 h-6 text-black" />
-                </div>
-              </div>
-              <p className="text-xs text-gray-500">This week</p>
-            </div>
           </div>
 
           {/* Support Tools & Weekly Calendar */}

@@ -32,11 +32,17 @@ export async function GET(request: NextRequest) {
       .where("created_at", "<=", weekEnd)
       .get()
 
+    // Only use docs with a valid created_at timestamp
+    const validDocs = snapshot.docs.filter(doc => {
+      const data = doc.data()
+      return data.created_at && typeof data.created_at.toDate === "function"
+    })
+
     // Group check-ins by date
     const thisWeekCheckInsMap: { [date: string]: number } = {}
-    snapshot.docs.forEach((doc) => {
+    validDocs.forEach((doc) => {
       const data = doc.data()
-      const createdAt = data.created_at?.toDate?.() || new Date()
+      const createdAt = data.created_at.toDate()
       const dateStr = createdAt.toISOString().split("T")[0]
       thisWeekCheckInsMap[dateStr] = (thisWeekCheckInsMap[dateStr] || 0) + 1
     })
@@ -54,13 +60,18 @@ export async function GET(request: NextRequest) {
       .orderBy("created_at", "desc")
       .get()
 
-    const allCheckIns = allCheckInsSnap.docs.map((doc) => {
-      const data = doc.data()
-      const createdAt = data.created_at?.toDate?.() || new Date()
-      return {
-        check_date: createdAt.toISOString().split("T")[0],
-      }
-    })
+    const allCheckIns = allCheckInsSnap.docs
+      .filter(doc => {
+        const data = doc.data()
+        return data.created_at && typeof data.created_at.toDate === "function"
+      })
+      .map((doc) => {
+        const data = doc.data()
+        const createdAt = data.created_at.toDate()
+        return {
+          check_date: createdAt.toISOString().split("T")[0],
+        }
+      })
 
     // Calculate streak
     let streak = 0
@@ -86,16 +97,16 @@ export async function GET(request: NextRequest) {
     }
 
     // Journal entries this week
-    const journalEntries = snapshot.docs.filter((doc) => {
+    const journalEntries = validDocs.filter((doc) => {
       const data = doc.data()
       return data.journal_entry && data.journal_entry.trim() !== ""
     }).length
 
     // Checked-in days (0=Sun, 6=Sat)
     const checkedInDays = new Set<number>()
-    snapshot.docs.forEach((doc) => {
+    validDocs.forEach((doc) => {
       const data = doc.data()
-      const createdAt = data.created_at?.toDate?.() || new Date()
+      const createdAt = data.created_at.toDate()
       checkedInDays.add(createdAt.getDay())
     })
 
