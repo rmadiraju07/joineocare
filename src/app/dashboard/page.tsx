@@ -127,7 +127,6 @@ export default function DashboardPage() {
             {/* Tools */}
             <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
               <h2 className="text-lg font-semibold text-black mb-6 flex items-center gap-2">
-                <BsHeart className="w-5 h-5 text-black" />
                 Your Support Tools
               </h2>
               <div className="space-y-3">
