@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     weekEnd.setDate(weekStart.getDate() + 6) // End of current week (Saturday)
     weekEnd.setHours(23, 59, 59, 999)
 
-    const thisWeekCheckIns = await nile.db.query<CheckInDate>(
+    const thisWeekCheckInsResult = await nile.db.query<CheckInDate>(
       `SELECT DATE(created_at) as check_date, COUNT(*) as count
        FROM check_ins 
        WHERE user_id = $1 AND created_at >= $2 AND created_at <= $3
@@ -35,8 +35,9 @@ export async function GET(request: NextRequest) {
        ORDER BY check_date`,
       [user.id, weekStart.toISOString(), weekEnd.toISOString()],
     )
+    const thisWeekCheckIns = thisWeekCheckInsResult.rows
 
-    const allCheckIns = await nile.db.query<CheckInDate>(
+    const allCheckInsResult = await nile.db.query<CheckInDate>(
       `SELECT DATE(created_at) as check_date
        FROM check_ins 
        WHERE user_id = $1
@@ -44,6 +45,7 @@ export async function GET(request: NextRequest) {
        ORDER BY check_date DESC`,
       [user.id],
     )
+    const allCheckIns = allCheckInsResult.rows
 
     let streak = 0
     const today = new Date().toISOString().split("T")[0]
@@ -70,7 +72,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const journalCount = await nile.db.query<JournalCount>(
+    const journalCountResult = await nile.db.query<JournalCount>(
       `SELECT COUNT(*) as count
        FROM check_ins 
        WHERE user_id = $1
@@ -79,6 +81,7 @@ export async function GET(request: NextRequest) {
          AND created_at >= $2`,
       [user.id, weekStart.toISOString()],
     )
+    const journalCount = journalCountResult.rows
 
     const checkedInDays = new Set<number>()
     thisWeekCheckIns.forEach((checkIn: CheckInDate) => {
@@ -89,7 +92,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       streak,
-      journalEntries: Number.parseInt(journalCount[0].count),
+      journalEntries: Number.parseInt(journalCount[0]?.count ?? "0"),
       checkedInDays: Array.from(checkedInDays),
       thisWeekCheckIns,
     })
