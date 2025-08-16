@@ -9,12 +9,14 @@ import { Button } from "@/components/ui/button"
 import { BsJournalText, BsBookmarks, BsPerson, BsList, BsX } from "react-icons/bs"
 import { RiHomeSmile2Line, RiRobot3Line } from "react-icons/ri";
 import { TbHealthRecognition, TbLocation } from "react-icons/tb";
+import { RiSortAlphabetDesc } from "react-icons/ri";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: RiHomeSmile2Line },
   { name: "Daily Check-in", href: "/checkin", icon: TbHealthRecognition },
   { name: "Chatbot", href: "/chatbot", icon: RiRobot3Line },
   { name: "Find NICUs", href: "/find-nicus", icon: TbLocation },
+  { name: "Glossary", href: "/glossary", icon: RiSortAlphabetDesc },
   { name: "Resources", href: "/resources", icon: BsBookmarks },
 ]
 
