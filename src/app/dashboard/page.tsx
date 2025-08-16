@@ -140,7 +140,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Daily Check-in Streak</p>
-                  <p className="text-3xl font-bold text-card-foreground">{dashboardData.streak}</p>
+                  <p className="text-3xl font-bold text-card-foreground">{checkedInDaysSet.size}</p>
                 </div>
                 <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center">
                   <IoTrendingUp className="w-6 h-6 text-foreground" />
