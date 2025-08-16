@@ -1,6 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { admin } from "@/lib/firebase-admin"
 import { getAuth } from "firebase/auth"
+import { verifyFirebaseToken } from "@/lib/verify-firebase-token"
+import { FieldValue } from "firebase-admin/firestore"
 
 interface CheckInDate {
   check_date: string
@@ -111,5 +113,35 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("Dashboard data error:", error)
     return NextResponse.json({ error: "Failed to fetch dashboard data" }, { status: 500 })
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const user = await verifyFirebaseToken(request)
+    if (!user?.uid) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const body = await request.json()
+    const { mood, gratitude, challenges, journalEntry } = body
+
+    if (!mood || !["great", "okay", "difficult"].includes(mood)) {
+      return NextResponse.json({ error: "Valid mood is required" }, { status: 400 })
+    }
+
+    const docRef = await admin.firestore().collection("check_ins").add({
+      user_id: user.uid,
+      mood,
+      gratitude: gratitude || "",
+      challenges: challenges || "",
+      journal_entry: journalEntry || "",
+      created_at: FieldValue.serverTimestamp(),
+    })
+
+    return NextResponse.json({ success: true, id: docRef.id })
+  } catch (error) {
+    console.error("Check-in POST error:", error)
+    return NextResponse.json({ error: "Failed to save check-in" }, { status: 500 })
   }
 }
