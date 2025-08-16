@@ -1,3 +1,4 @@
+import { Timestamp } from "firebase-admin/firestore"
 import { type NextRequest, NextResponse } from "next/server"
 import { admin } from "@/lib/firebase-admin"
 import { verifyFirebaseToken } from "@/lib/verify-firebase-token"
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // Get start and end of the current week
+    // Get start and end of the current week as Firestore Timestamps
     const weekStart = new Date()
     weekStart.setDate(weekStart.getDate() - weekStart.getDay())
     weekStart.setHours(0, 0, 0, 0)
@@ -28,8 +29,8 @@ export async function GET(request: NextRequest) {
       .firestore()
       .collection("check_ins")
       .where("user_id", "==", user.uid)
-      .where("created_at", ">=", weekStart)
-      .where("created_at", "<=", weekEnd)
+      .where("created_at", ">=", Timestamp.fromDate(weekStart))
+      .where("created_at", "<=", Timestamp.fromDate(weekEnd))
       .get()
 
     // Only use docs with a valid created_at timestamp
