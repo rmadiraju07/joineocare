@@ -1,5 +1,6 @@
 "use client"
 
+import { auth } from "@/lib/firebase"
 import { useEffect, useState } from "react"
 import { Sidebar } from "@/components/sidebar"
 import { BsHeart, BsCalendar, BsJournalText } from "react-icons/bs"
@@ -52,7 +53,17 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const response = await fetch("/api/dashboard")
+        const user = auth.currentUser
+        if (!user) {
+          setIsLoading(false)
+          return
+        }
+        const idToken = await user.getIdToken()
+        const response = await fetch("/api/dashboard", {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        })
         if (response.ok) {
           const data: DashboardData = await response.json()
           setDashboardData(data)
