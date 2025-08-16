@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import Head from "next/head";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 // Static metadata used by Next.js (for SEO and auto-injected tags)
 export const metadata: Metadata = {
@@ -52,6 +53,7 @@ export default function RootLayout({
       <body className="bg-white font-circular text-gray-900">
         {children}
         <Analytics />
+        <SpeedInsights/>
       </body>
     </html>
   );
