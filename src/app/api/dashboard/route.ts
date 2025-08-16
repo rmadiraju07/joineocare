@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
       .get()
 
     // Only use docs with a valid created_at timestamp
-    const validDocs = snapshot.docs.filter(doc => {
+    const validDocs = snapshot.docs.filter((doc) => {
       const data = doc.data()
       return data.created_at && typeof data.created_at.toDate === "function"
     })
@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
       .get()
 
     const allCheckIns = allCheckInsSnap.docs
-      .filter(doc => {
+      .filter((doc) => {
         const data = doc.data()
         return data.created_at && typeof data.created_at.toDate === "function"
       })
