@@ -135,7 +135,7 @@ const CheckInPage = () => {
                     onChange={(e) => setChallenges(e.target.value)}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent resize-none"
                     rows={3}
-                    placeholder="It's okay to acknowledge difficult moments..."
+                    placeholder="It&apos;s okay to acknowledge difficult moments..."
                   />
                 </div>
               </div>
@@ -146,7 +146,7 @@ const CheckInPage = () => {
           <div className="bg-white border-2 border-black rounded-lg p-6 mb-8">
             <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
               <Edit3 className="w-5 h-5 mr-2" />
-              Today's Journal Entry
+              Today&apos;s Journal Entry
             </h2>
 
             <textarea
@@ -166,7 +166,7 @@ const CheckInPage = () => {
           {/* Submit */}
           <div className="text-center bg-gray-50 rounded-lg p-8">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              You're doing great by taking time for yourself
+              You&apos;re doing great by taking time for yourself
             </h3>
 
             <button
