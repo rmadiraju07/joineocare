@@ -4,52 +4,42 @@ import Image from "next/image"
 import Link from "next/link"
 import { ArrowLeft, Calendar, Clock, Share2 } from "lucide-react"
 import { use } from "react"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 
-// Sample blog content - in a real app, this would come from a CMS or database
+// Sample blog content in Markdown format
 const blogContent = {
-  "welcome-to-nunitius": {
-    title: "Welcome to Nunitius",
-    date: "July 4, 2025",
+  "welcome-to-neocare": {
+    title: "Welcome to neocare",
+    date: "March 4, 2024",
     readTime: "3 min read",
     category: "Introduction",
     content: `
-      <p>Digital communication has become the backbone of modern relationships, but for many neurodivergent individuals, texting can feel like navigating a minefield of unspoken rules and hidden meanings.</p>
-      
-      <h2>The Hidden Complexity of "Simple" Messages</h2>
-      <p>What seems straightforward to neurotypical individuals often carries layers of complexity for neurodivergent minds. A simple "How are you?" can trigger a cascade of questions:</p>
-      <ul>
-        <li>Do they want a real answer or just "fine"?</li>
-        <li>How much detail is appropriate?</li>
-        <li>Should I ask them back immediately?</li>
-        <li>What if I'm not actually fine?</li>
-      </ul>
-      <p>This mental processing isn't a flaw—it's a different way of engaging with communication that values precision, authenticity, and consideration.</p>
-      
-      <h2>The Tone Interpretation Challenge</h2>
-      <p>Without facial expressions, vocal inflections, or body language, text messages become puzzles to decode. A delayed response might mean:</p>
-      <ul>
-        <li>They're busy (most likely)</li>
-        <li>They're upset (possible)</li>
-        <li>They didn't see the message (common)</li>
-        <li>They're crafting a thoughtful response (often true)</li>
-      </ul>
-      <p>For neurodivergent individuals who already work harder to interpret social cues, this ambiguity can be exhausting.</p>
-      
-      <h2>Strategies That Actually Help</h2>
-      <p>Understanding these challenges is the first step. Here are practical approaches that can make texting feel more manageable:</p>
-      
-      <h3>1. Create Your Own Rules</h3>
-      <p>Instead of trying to decode unspoken social rules, establish your own communication preferences. It's okay to be direct, ask for clarification, or take time to respond.</p>
-      
-      <h3>2. Use Context Clues</h3>
-      <p>Look at the relationship, recent interactions, and the person's typical communication style. Most people are consistent in how they text.</p>
-      
-      <h3>3. Practice Self-Compassion</h3>
-      <p>Miscommunications happen to everyone. They're not a reflection of your worth or intelligence—they're just part of human interaction.</p>
-      
-      <h2>Building Confidence Over Time</h2>
-      <p>Like any skill, digital communication improves with practice and patience. Start with low-stakes conversations, celebrate small wins, and remember that authentic communication is always better than perfect communication.</p>
-      <p>Your neurodivergent perspective brings unique strengths to conversations: thoughtfulness, authenticity, and genuine care for others' feelings. These qualities make you a valuable communicator, even when texting feels challenging.</p>
+The NICU experience can be overwhelming and emotionally exhausting. At **neocare**, we’re dedicated to walking alongside you every step of the way — offering tools designed to support your mental and emotional well-being during this challenging time.
+
+## What is neocare?
+
+**neocare** is a holistic app created specifically for NICU parents. It helps you process your feelings, stay informed, and find community support through a range of practical features:
+
+- **Daily Check-Ins & Streak Tracking:** Reflect on how you’re feeling each day with guided journaling prompts, and celebrate your progress by tracking your streaks.
+- **Quick Reflections & Journal Entries:** Take a moment anytime to jot down thoughts, memories, or emotions to help process your journey.
+- **24/7 Chatbot Support:** Have questions or need reassurance? Our always-available chatbot is here to listen, provide information, and guide you.
+- **Find NICU Hospitals Near You:** Easily locate NICU facilities close to home or wherever you are, so you can plan visits and stay connected.
+- **Glossary of Medical Terms:** Decode complex NICU jargon with our simple, easy-to-understand glossary.
+- **Resource Library:** Access trusted articles, tips, and support networks tailored for NICU parents.
+
+## Why neocare?
+
+We believe that small moments of reflection and connection can create a big impact on your resilience and hope. **neocare** is designed to be a gentle daily companion — giving you space to be heard, understood, and informed.
+
+## Join the neocare Community
+
+Your NICU journey is unique, but you are never alone. Explore **neocare** and find the comfort of knowing you have a supportive tool and community by your side.
+
+Thank you for letting **neocare** be part of your story.
+
+With warmth and support,  
+The neocare Team
     `,
   },
 }
@@ -81,7 +71,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
       <header className="mt-8 px-6">
         <div className="flex items-center justify-between max-w-screen-xl mx-auto h-16">
           <Link href="/" className="flex items-center">
-            <Image src="/logo.svg" width={40} height={40} alt="Nuntius logo" priority />
+            <Image src="/logo.svg" width={40} height={40} alt="neocare logo" priority />
           </Link>
           <div className="absolute left-1/2 transform -translate-x-1/2">
             <p className="text-3xl text-gray-800 tracking-tight whitespace-nowrap">Thoughtful texting insights</p>
@@ -170,33 +160,46 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
             </div>
           </header>
 
-          {/* Article Body with proper prose styling */}
-          <div
-            className="prose prose-lg prose-gray max-w-none
-              prose-headings:text-gray-900 prose-headings:font-bold
-              prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4
-              prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3
-              prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-4
-              prose-ul:my-4 prose-li:text-gray-700 prose-li:mb-2
-              prose-strong:text-gray-900"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
+          {/* Markdown Content */}
+          <div className="prose prose-lg prose-gray max-w-none mx-auto">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                p: ({ node, ...props }) => (
+                  <p className="mb-6 leading-relaxed text-gray-700" {...props} />
+                ),
+                ul: ({ node, ...props }) => (
+                  <ul className="list-disc list-inside mb-6 text-gray-700" {...props} />
+                ),
+                strong: ({ node, ...props }) => (
+                  <strong className="text-gray-900 font-semibold" {...props} />
+                ),
+                h2: ({ node, ...props }) => (
+                  <h2 className="text-2xl mt-8 mb-4 font-bold text-gray-900" {...props} />
+                ),
+                h3: ({ node, ...props }) => (
+                  <h3 className="text-xl mt-6 mb-3 font-bold text-gray-900" {...props} />
+                ),
+              }}
+            >
+              {post.content}
+            </ReactMarkdown>
+          </div>
 
           {/* Article Footer */}
           <footer className="mt-16 pt-8 border-t border-gray-200">
             <div className="bg-gray-50 rounded-lg p-6">
               <div className="flex items-center mb-4">
                 <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center mr-4">
-                  <Image src="/logo.svg" width={20} height={20} alt="Nuntius logo" className="filter invert" />
+                  <Image src="/logo.svg" width={20} height={20} alt="neocare logo" className="filter invert" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-800">nuntius</h3>
-                  <p className="text-sm text-gray-600">Helping you master the art of texting</p>
+                  <h3 className="font-semibold text-gray-800">neocare</h3>
+                  <p className="text-sm text-gray-600">Caring for the carers</p>
                 </div>
               </div>
               <p className="text-gray-600 text-sm mb-4">
-                Ready to build your texting confidence? Join thousands of people learning to communicate with clarity
-                and kindness.
+                Ready to start your NICU journey with support? Join neocare.
               </p>
               <Link href="/auth/signup">
                 <button className="bg-black text-white px-6 py-2 rounded-lg font-medium hover:bg-gray-800 transition-colors text-sm">

@@ -30,6 +30,11 @@ export default function Home() {
                 About
               </button>
             </Link>
+            <Link href="/blog">
+              <button className="px-6 py-2 rounded-full bg-white text-gray-800 shadow-md hover:bg-gray-100 transition-all duration-200 font-semibold text-sm border border-gray-200 hover:shadow-lg">
+                Blog
+              </button>
+            </Link>
             {/* Login button with hover expansion */}
             <div className="relative">
               <Link href="/auth">

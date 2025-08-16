@@ -46,10 +46,10 @@ const blogPosts = [
   //   category: "ESL Support",
   // },
   {
-    slug: "welcome-to-nunitius",
-    title: "Welcome to Nunitius",
-    excerpt: "Whether you find texting confusing, group chats exhausting, or just want to feel more natural in casual messages, Nuntius is here to help. In this post, we’ll explore the mission behind Nuntius and how it empowers people to feel seen, understood, and confident online.",
-    date: "July 4, 2025",
+    slug: "welcome-to-neocare",
+    title: "Welcome to neocare",
+    excerpt: "A supportive space where NICU parents can find strength, hope, and community",
+    date: "March 4, 2024",
     readTime: "3 min read",
     category: "Introduction",
   },
@@ -62,12 +62,17 @@ export default function BlogPage() {
       <header className="mt-8 px-6">
         <div className="flex items-center justify-between max-w-screen-xl mx-auto h-16">
           <Link href="/" className="flex items-center">
-            <Image src="/logo.svg" width={40} height={40} alt="Nuntius logo" priority />
+            <Image src="/logo.svg" width={40} height={40} alt="neocare logo" priority />
           </Link>
           <div className="absolute left-1/2 transform -translate-x-1/2">
-            <p className="text-3xl text-gray-800 tracking-tight whitespace-nowrap">Thoughtful texting insights</p>
+            <p className="text-3xl text-gray-800 tracking-tight whitespace-nowrap">Caring for the carers</p>
           </div>
           <div className="flex items-center space-x-3" style={{ minWidth: "280px", justifyContent: "flex-end" }}>
+            <Link href="/about">
+              <button className="px-6 py-2 rounded-full bg-white text-gray-800 shadow-md hover:bg-gray-100 transition-all duration-200 font-semibold text-sm border border-gray-200 hover:shadow-lg">
+                About
+              </button>
+            </Link>
             <Link href="/blog">
               <button className="px-6 py-2 rounded-full bg-black text-white shadow-md hover:bg-gray-800 transition-all duration-200 font-semibold text-sm">
                 Blog
@@ -120,13 +125,13 @@ export default function BlogPage() {
           <div className="text-center mb-16">
             <div className="flex items-center justify-center mb-6">
               <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center mr-4">
-                <Image src="/logo.svg" width={24} height={24} alt="Nuntius logo" className="filter invert" />
+                <Image src="/logo.svg" width={24} height={24} alt="neocare logo" className="filter invert" />
               </div>
-              <h1 className="text-4xl font-bold text-gray-900">nuntius blog</h1>
+              <h1 className="text-4xl font-bold text-gray-900">neocare blog</h1>
             </div>
-            <p className="text-xl text-gray-600 mb-4">Insights for better digital communication</p>
+            <p className="text-xl text-gray-600 mb-4">Emotional support and guidance for families with babies in NICU.</p>
             <p className="text-gray-500 max-w-2xl mx-auto">
-              Practical advice, research-backed insights, and real stories about improving your texting confidence.
+              Designed for parents and loved ones navigating the NICU journey, offering comfort, clarity, and connection during a challenging time.
             </p>
           </div>
 
@@ -227,8 +232,8 @@ export default function BlogPage() {
         {/* Left side */}
         <div className="flex flex-col sm:flex-row items-center gap-4 text-gray-500">
           <div className="flex items-center space-x-2">
-            <Image src="/favicon.svg" width={32} height={32} alt="Nuntius logo" unoptimized />
-            <span className="font-medium text-gray-600">nuntius</span>
+            <Image src="/favicon.svg" width={32} height={32} alt="neocare logo" unoptimized />
+            <span className="font-medium text-gray-600">neocare</span>
           </div>
 
           <span className="text-sm">Copyright © 2025</span>
