@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { nile } from "@/lib/nile"
+import { admin } from "@/lib/firebase-admin"
+import { verifyFirebaseToken } from "@/lib/verify-firebase-token"
 
 interface CheckInRequest {
   mood: "great" | "okay" | "difficult"
@@ -10,29 +11,31 @@ interface CheckInRequest {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await nile.api.auth.getSession(request)
-    if (!session?.user?.id) {
+    const user = await verifyFirebaseToken(request)
+    if (!user?.uid) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const body: CheckInRequest = await request.json()
     const { mood, gratitude, challenges, journalEntry } = body
 
-    // Validate required fields
     if (!mood || !["great", "okay", "difficult"].includes(mood)) {
       return NextResponse.json({ error: "Valid mood is required" }, { status: 400 })
     }
 
-    const result = await nile.db.query(
-      `INSERT INTO check_ins (user_id, mood, gratitude, challenges, journal_entry)
-       VALUES ($1, $2, $3, $4, $5)
-       RETURNING id, created_at`,
-      [session.user.id, mood, gratitude || "", challenges || "", journalEntry || ""],
-    )
+    const docRef = await admin.firestore().collection("check_ins").add({
+      user_id: user.uid,
+      mood,
+      gratitude: gratitude || "",
+      challenges: challenges || "",
+      journal_entry: journalEntry || "",
+      created_at: admin.firestore.FieldValue.serverTimestamp(),
+    })
 
+    const doc = await docRef.get()
     return NextResponse.json({
       success: true,
-      checkIn: result.rows[0],
+      checkIn: { id: doc.id, ...doc.data() },
     })
   } catch (error) {
     console.error("Check-in error:", error)
@@ -42,21 +45,25 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await nile.api.auth.getSession(request)
-    if (!session?.user?.id) {
+    const user = await verifyFirebaseToken(request)
+    if (!user?.uid) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const result = await nile.db.query(
-      `SELECT id, mood, gratitude, challenges, journal_entry, created_at
-       FROM check_ins 
-       WHERE user_id = $1
-       ORDER BY created_at DESC
-       LIMIT 30`,
-      [session.user.id],
-    )
+    const snapshot = await admin
+      .firestore()
+      .collection("check_ins")
+      .where("user_id", "==", user.uid)
+      .orderBy("created_at", "desc")
+      .limit(30)
+      .get()
 
-    return NextResponse.json({ checkIns: result.rows })
+    const checkIns = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }))
+
+    return NextResponse.json({ checkIns })
   } catch (error) {
     console.error("Fetch check-ins error:", error)
     return NextResponse.json({ error: "Failed to fetch check-ins" }, { status: 500 })

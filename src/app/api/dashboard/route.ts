@@ -1,69 +1,81 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { nile } from "@/lib/nile"
+import { admin } from "@/lib/firebase-admin"
+import { verifyFirebaseToken } from "@/lib/verify-firebase-token"
 
 interface CheckInDate {
   check_date: string
-  count?: string
-}
-
-interface JournalCount {
-  count: string
+  count?: number
 }
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await nile.api.auth.getSession(request)
-    if (!session || !session.user) {
+    const user = await verifyFirebaseToken(request)
+    if (!user?.uid) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const user = session.user
-
+    // Get start and end of the current week
     const weekStart = new Date()
-    weekStart.setDate(weekStart.getDate() - weekStart.getDay()) // Start of current week (Sunday)
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay())
     weekStart.setHours(0, 0, 0, 0)
 
     const weekEnd = new Date(weekStart)
-    weekEnd.setDate(weekStart.getDate() + 6) // End of current week (Saturday)
+    weekEnd.setDate(weekStart.getDate() + 6)
     weekEnd.setHours(23, 59, 59, 999)
 
-    const thisWeekCheckInsResult = await nile.db.query<CheckInDate>(
-      `SELECT DATE(created_at) as check_date, COUNT(*) as count
-       FROM check_ins 
-       WHERE user_id = $1 AND created_at >= $2 AND created_at <= $3
-       GROUP BY DATE(created_at)
-       ORDER BY check_date`,
-      [user.id, weekStart.toISOString(), weekEnd.toISOString()],
-    )
-    const thisWeekCheckIns = thisWeekCheckInsResult.rows
+    // Fetch all check-ins for this user this week
+    const snapshot = await admin
+      .firestore()
+      .collection("check_ins")
+      .where("user_id", "==", user.uid)
+      .where("created_at", ">=", weekStart)
+      .where("created_at", "<=", weekEnd)
+      .get()
 
-    const allCheckInsResult = await nile.db.query<CheckInDate>(
-      `SELECT DATE(created_at) as check_date
-       FROM check_ins 
-       WHERE user_id = $1
-       GROUP BY DATE(created_at)
-       ORDER BY check_date DESC`,
-      [user.id],
-    )
-    const allCheckIns = allCheckInsResult.rows
+    // Group check-ins by date
+    const thisWeekCheckInsMap: { [date: string]: number } = {}
+    snapshot.docs.forEach(doc => {
+      const data = doc.data()
+      const createdAt = data.created_at?.toDate?.() || new Date()
+      const dateStr = createdAt.toISOString().split("T")[0]
+      thisWeekCheckInsMap[dateStr] = (thisWeekCheckInsMap[dateStr] || 0) + 1
+    })
 
+    const thisWeekCheckIns: CheckInDate[] = Object.entries(thisWeekCheckInsMap).map(
+      ([check_date, count]) => ({ check_date, count })
+    )
+
+    // Fetch all check-ins for streak calculation
+    const allCheckInsSnap = await admin
+      .firestore()
+      .collection("check_ins")
+      .where("user_id", "==", user.uid)
+      .orderBy("created_at", "desc")
+      .get()
+
+    const allCheckIns = allCheckInsSnap.docs.map(doc => {
+      const data = doc.data()
+      const createdAt = data.created_at?.toDate?.() || new Date()
+      return {
+        check_date: createdAt.toISOString().split("T")[0],
+      }
+    })
+
+    // Calculate streak
     let streak = 0
     const today = new Date().toISOString().split("T")[0]
     const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split("T")[0]
+    const allDates = allCheckIns.map(ci => ci.check_date)
+    const hasRecentCheckIn = allDates.includes(today) || allDates.includes(yesterday)
 
-    const hasRecentCheckIn = allCheckIns.some(
-      (ci: CheckInDate) => ci.check_date === today || ci.check_date === yesterday,
-    )
-
-    if (hasRecentCheckIn && allCheckIns.length > 0) {
+    if (hasRecentCheckIn && allDates.length > 0) {
       const currentDate = new Date()
-      if (allCheckIns[0].check_date !== today) {
-        currentDate.setDate(currentDate.getDate() - 1) // Start from yesterday if no check-in today
+      if (allDates[0] !== today) {
+        currentDate.setDate(currentDate.getDate() - 1)
       }
-
-      for (const checkIn of allCheckIns) {
+      for (const checkIn of allDates) {
         const checkInDate = currentDate.toISOString().split("T")[0]
-        if (checkIn.check_date === checkInDate) {
+        if (checkIn === checkInDate) {
           streak++
           currentDate.setDate(currentDate.getDate() - 1)
         } else {
@@ -72,27 +84,23 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const journalCountResult = await nile.db.query<JournalCount>(
-      `SELECT COUNT(*) as count
-       FROM check_ins 
-       WHERE user_id = $1
-         AND journal_entry IS NOT NULL 
-         AND journal_entry != ''
-         AND created_at >= $2`,
-      [user.id, weekStart.toISOString()],
-    )
-    const journalCount = journalCountResult.rows
+    // Journal entries this week
+    const journalEntries = snapshot.docs.filter(doc => {
+      const data = doc.data()
+      return data.journal_entry && data.journal_entry.trim() !== ""
+    }).length
 
+    // Checked-in days (0=Sun, 6=Sat)
     const checkedInDays = new Set<number>()
-    thisWeekCheckIns.forEach((checkIn: CheckInDate) => {
-      const date = new Date(checkIn.check_date)
-      const dayOfWeek = date.getDay() // 0 = Sunday, 1 = Monday, etc.
-      checkedInDays.add(dayOfWeek)
+    snapshot.docs.forEach(doc => {
+      const data = doc.data()
+      const createdAt = data.created_at?.toDate?.() || new Date()
+      checkedInDays.add(createdAt.getDay())
     })
 
     return NextResponse.json({
       streak,
-      journalEntries: Number.parseInt(journalCount[0]?.count ?? "0"),
+      journalEntries,
       checkedInDays: Array.from(checkedInDays),
       thisWeekCheckIns,
     })
