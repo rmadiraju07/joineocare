@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Heart, Calendar, Edit3, Save, Smile, Meh, Frown } from "react-feather"
 import { Sidebar } from "@/components/sidebar"
+import { getAuth } from "firebase/auth"
 
 const CheckInPage = () => {
   const [selectedMood, setSelectedMood] = useState<string>("")
@@ -28,10 +29,19 @@ const CheckInPage = () => {
     }
 
     try {
+      const auth = getAuth()
+      const user = auth.currentUser
+      if (!user) {
+        alert("You must be signed in to check in.")
+        return
+      }
+      const idToken = await user.getIdToken()
+
       const res = await fetch("/api/checkin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
         },
         body: JSON.stringify(payload),
       })

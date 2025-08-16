@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { admin } from "@/lib/firebase-admin"
 import { verifyFirebaseToken } from "@/lib/verify-firebase-token"
+import { getAuth } from "firebase/auth"
 
 interface CheckInDate {
   check_date: string
@@ -9,7 +10,10 @@ interface CheckInDate {
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await verifyFirebaseToken(request)
+    const auth = getAuth()
+    const user = auth.currentUser
+    const idToken = user && (await user.getIdToken())
+
     if (!user?.uid) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
