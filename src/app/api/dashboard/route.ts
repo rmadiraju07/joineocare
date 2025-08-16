@@ -1,7 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { admin } from "@/lib/firebase-admin"
 import { verifyFirebaseToken } from "@/lib/verify-firebase-token"
-import { getAuth } from "firebase/auth"
 
 interface CheckInDate {
   check_date: string
@@ -10,10 +9,7 @@ interface CheckInDate {
 
 export async function GET(request: NextRequest) {
   try {
-    const auth = getAuth()
-    const user = auth.currentUser
-    const idToken = user && (await user.getIdToken())
-
+    const user = await verifyFirebaseToken(request)
     if (!user?.uid) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
@@ -38,16 +34,17 @@ export async function GET(request: NextRequest) {
 
     // Group check-ins by date
     const thisWeekCheckInsMap: { [date: string]: number } = {}
-    snapshot.docs.forEach(doc => {
+    snapshot.docs.forEach((doc) => {
       const data = doc.data()
       const createdAt = data.created_at?.toDate?.() || new Date()
       const dateStr = createdAt.toISOString().split("T")[0]
       thisWeekCheckInsMap[dateStr] = (thisWeekCheckInsMap[dateStr] || 0) + 1
     })
 
-    const thisWeekCheckIns: CheckInDate[] = Object.entries(thisWeekCheckInsMap).map(
-      ([check_date, count]) => ({ check_date, count })
-    )
+    const thisWeekCheckIns: CheckInDate[] = Object.entries(thisWeekCheckInsMap).map(([check_date, count]) => ({
+      check_date,
+      count,
+    }))
 
     // Fetch all check-ins for streak calculation
     const allCheckInsSnap = await admin
@@ -57,7 +54,7 @@ export async function GET(request: NextRequest) {
       .orderBy("created_at", "desc")
       .get()
 
-    const allCheckIns = allCheckInsSnap.docs.map(doc => {
+    const allCheckIns = allCheckInsSnap.docs.map((doc) => {
       const data = doc.data()
       const createdAt = data.created_at?.toDate?.() || new Date()
       return {
@@ -69,7 +66,7 @@ export async function GET(request: NextRequest) {
     let streak = 0
     const today = new Date().toISOString().split("T")[0]
     const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split("T")[0]
-    const allDates = allCheckIns.map(ci => ci.check_date)
+    const allDates = allCheckIns.map((ci) => ci.check_date)
     const hasRecentCheckIn = allDates.includes(today) || allDates.includes(yesterday)
 
     if (hasRecentCheckIn && allDates.length > 0) {
@@ -89,14 +86,14 @@ export async function GET(request: NextRequest) {
     }
 
     // Journal entries this week
-    const journalEntries = snapshot.docs.filter(doc => {
+    const journalEntries = snapshot.docs.filter((doc) => {
       const data = doc.data()
       return data.journal_entry && data.journal_entry.trim() !== ""
     }).length
 
     // Checked-in days (0=Sun, 6=Sat)
     const checkedInDays = new Set<number>()
-    snapshot.docs.forEach(doc => {
+    snapshot.docs.forEach((doc) => {
       const data = doc.data()
       const createdAt = data.created_at?.toDate?.() || new Date()
       checkedInDays.add(createdAt.getDay())

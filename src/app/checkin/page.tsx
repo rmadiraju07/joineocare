@@ -47,21 +47,31 @@ const CheckInPage = () => {
 
       if (res.ok) {
         setIsSubmitted(true)
+        setSelectedMood("")
+        setJournalEntry("")
+        setGratitude("")
+        setChallenges("")
         setTimeout(() => setIsSubmitted(false), 3000)
       } else {
-        const { error } = await res.json()
-        console.error("Check-in failed:", error)
+        const errorData = await res.json()
+        console.error("Check-in failed:", errorData.error)
+        alert(`Check-in failed: ${errorData.error}`)
       }
     } catch (err) {
       console.error("Unexpected error:", err)
+      alert("An unexpected error occurred. Please try again.")
     }
   }
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
+      {/* Sidebar */}
+      <aside className="w-64 bg-white border-r border-gray-200">
+        <Sidebar />
+      </aside>
 
-      <div className="flex-1 ml-64 p-8">
+      {/* Main Content */}
+      <main className="flex-1 p-8 overflow-auto">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
@@ -72,6 +82,7 @@ const CheckInPage = () => {
             <p className="text-gray-600">Take a moment to reflect on your day and emotions</p>
           </div>
 
+          {/* Mood + Reflection */}
           <div className="grid md:grid-cols-2 gap-8 mb-8">
             {/* Mood Check-In */}
             <div className="bg-white border-2 border-black rounded-lg p-6">
@@ -88,7 +99,9 @@ const CheckInPage = () => {
                       key={mood.id}
                       onClick={() => setSelectedMood(mood.id)}
                       className={`w-full p-4 rounded-lg border-2 transition-all flex items-center space-x-3 ${
-                        selectedMood === mood.id ? "border-black bg-gray-50" : "border-gray-200 hover:border-gray-300"
+                        selectedMood === mood.id
+                          ? "border-black bg-gray-50"
+                          : "border-gray-200 hover:border-gray-300"
                       }`}
                     >
                       <IconComponent className={`w-6 h-6 ${mood.color}`} />
@@ -122,18 +135,18 @@ const CheckInPage = () => {
                     onChange={(e) => setChallenges(e.target.value)}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent resize-none"
                     rows={3}
-                    placeholder="It&apos;s okay to acknowledge difficult moments..."
+                    placeholder="It's okay to acknowledge difficult moments..."
                   />
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Journal Section */}
+          {/* Journal Entry */}
           <div className="bg-white border-2 border-black rounded-lg p-6 mb-8">
             <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
               <Edit3 className="w-5 h-5 mr-2" />
-              Today&apos;s Journal Entry
+              Today's Journal Entry
             </h2>
 
             <textarea
@@ -150,10 +163,10 @@ const CheckInPage = () => {
             </div>
           </div>
 
-          {/* Submit Section */}
+          {/* Submit */}
           <div className="text-center bg-gray-50 rounded-lg p-8">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              You&apos;re doing great by taking time for yourself
+              You're doing great by taking time for yourself
             </h3>
 
             <button
@@ -183,7 +196,7 @@ const CheckInPage = () => {
             <p className="text-sm text-gray-500 mt-4">Taking time to reflect helps build emotional resilience</p>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   )
 }
